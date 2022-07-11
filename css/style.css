@@ -1,0 +1,81 @@
+body {
+  font-family: "Courier New";
+  height: 100vh;
+  width: 100vw;
+  background-color: #d9b28a;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.calculator {
+  background-color: #f6f2d0;
+  border-radius: 15px;
+  width: 28vw;
+  height: 55vw;
+  max-width: 40.72vh;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.display {
+  background-color: lightgrey;
+  border-radius: 6px;
+  height: calc(4 * 15pt);
+  padding: 15pt;
+  margin: 20pt;
+  margin-top: 50pt;
+}
+
+.buttonbox {
+  flex: 1;
+  background-color: #687f58;
+  border-radius: 6px;
+  margin: 20pt;
+  display: flex;
+}
+
+.numberbox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  position: relative;
+}
+
+.operatorbox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.numberbox button {
+  width: 22%;
+  height: 11%;
+}
+
+.operatorbox button {
+  width: 55%;
+  height: 11%
+}
+
+.buttonbox button {
+  font-size: 15pt;
+  margin: 6pt;
+  border: 0;
+  border-radius: 10px;
+  color: #200e09;
+  background-color: #d9b28a;
+}
+
+.footer {
+  height: 56px;
+  background-color: #687f58;
+}
