@@ -1,44 +1,56 @@
+const display = document.querySelector('.display')
+const calculator = {
+  buffer: "",
+  btnPres: function (btn) {
+    console.log(btn)
+    this.buffer += btn
+    display.innerText = this.buffer;
+  },
+  solve: function () {
+  console.log("solving");
+  display.innerText = "Solution";
+    this.buffer = "";
+}
+};
+
+const setupButtonRow = function (buttons) {
+  const buttonRowDiv = document.createElement("div")
+  buttonRowDiv.classList.add("button-row")
+  buttons.forEach( (button) => {
+    const buttonEl = document.createElement("button")
+    button.classes.forEach( (elClass) => {
+      buttonEl.classList.add(elClass);
+    });
+    buttonEl.innerText = button.text;
+    if (!button.classes.includes("enter-btn")) {
+      buttonEl.addEventListener("click", function() {calculator.btnPres(button.text)});
+    } else { buttonEl.addEventListener("click", calculator.solve)}
+    buttonRowDiv.appendChild(buttonEl);
+  })
+  return buttonRowDiv;
+}
+
 const setupButtons = function () {
   const buttonBox = document.querySelector(".buttonbox");
-  const numberBox = document.createElement("div");
-  numberBox.classList.add("numberbox");
-  for (let i = 1; i < 10; i++) {
-    const numButton = document.createElement("button");
-    numButton.innerText = `${i}`;
-    numButton.classList.add("num-btn");
-    numButton.classList.add(`butn-${i}`);
-    numberBox.appendChild(numButton);
+  const primaryOperations = ["add", "subtract", "multiply", "divide"]
+  const primaryOperatorSymbol = ["+",  "-", `\u0078`, `\u2052`]
+  let currentRow = []
+  for (let i = 0; i < 10; i++) {
+    currentRow.push({text: `${i}`, classes: ["num-btn", `butn-${i}`]});
+    if (i === 0) {
+        currentRow.push({text: '.', classes: ["num-btn", "butn-dot"]});
+        currentRow.push({text: 'enter', classes: ["enter-btn"]});
+    }
+    if (i % 3 == 0) {
+      const operatorButton = primaryOperations[i/3];
+      const operatorSymbol = primaryOperatorSymbol[i/3]
+      currentRow.push({text: `${operatorSymbol}`, classes: ["operator-btn", `${operatorButton}-btn`]});
+      const buttonRowDiv = setupButtonRow(currentRow);
+      currentRow = [];
+      buttonRowDiv.classList.add("buttonRow")
+      buttonBox.appendChild(buttonRowDiv);
+    }
   }
-  const numButton = document.createElement("button");
-  numButton.innerText = `0`;
-  numButton.classList.add("num-btn");
-  numButton.classList.add(`butn-0`);
-  numberBox.appendChild(numButton);
-  buttonBox.appendChild(numberBox);
-
-  const operatorBox = document.createElement('div');
-  operatorBox.classList.add("operatorbox");
-  const addButton = document.createElement("button");
-  addButton.classList.add("operator-btn");
-  addButton.classList.add("add-btn");
-  addButton.innerText = "+";
-  const subtractButton = document.createElement("button");
-  subtractButton.classList.add("operator-btn");
-  subtractButton.classList.add("subtract-btn");
-  subtractButton.innerText = "-";
-  const multiplyButton = document.createElement("button");
-  multiplyButton.classList.add("operator-btn");
-  multiplyButton.classList.add("multiply-btn");
-  multiplyButton.innerText = `\u0078`;
-  const divideButton = document.createElement("button");
-  divideButton.classList.add("operator-btn");
-  divideButton.classList.add("divide-btn");
-  divideButton.innerText = `\u2052`;
-  operatorBox.appendChild(addButton);
-  operatorBox.appendChild(subtractButton);
-  operatorBox.appendChild(multiplyButton);
-  operatorBox.appendChild(divideButton);
-  buttonBox.appendChild(operatorBox);
 };
 
 setupButtons();
