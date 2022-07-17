@@ -7,8 +7,8 @@ const calculator = {
     display.innerText = this.buffer;
   },
   solve: function () {
-  console.log("solving");
-  display.innerText = "Solution";
+    console.log("solving");
+    display.innerText = "Solution";
     this.buffer = "";
 }
 };
