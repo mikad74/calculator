@@ -40,7 +40,7 @@ const setupButtonRow = function (buttons) {
 const setupButtons = function () {
   const buttonBox = document.querySelector(".buttonbox");
   const primaryOperations = ["add", "subtract", "multiply", "divide"];
-  const primaryOperatorSymbol = ["+", "-", `\u0078`, `\u2052`];
+  const primaryOperatorSymbol = ["+", "-", `*`, `/`];
   let currentRow = [];
   for (let i = 0; i < 10; i++) {
     currentRow.push({ text: `${i}`, classes: ["num-btn", `butn-${i}`] });

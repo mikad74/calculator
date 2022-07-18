@@ -4,7 +4,8 @@
   "description": "calculator for theOdinProject",
   "main": "main.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "solver" : "node js/solver.js"
   },
   "repository": {
     "type": "git",
