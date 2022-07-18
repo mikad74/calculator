@@ -3,17 +3,18 @@ function getParseType(char) {
   if (char.match(/[\+\-]/)) return "addition-operator";
   if (char.match(/[\*\/]/)) return "multiplication-operator";
   if (char.match(/[\(\)]/)) return "bracket";
-  if (char.match(/[\_]/)) return "evaluated-function"
+  if (char.match(/[\_]/)) return "evaluated-function";
   return "function";
 }
 
 function solver(parsedEquation) {
   console.log(parsedEquation);
+  if (parsedEquation.length === 1) return parsedEquation[0];
   let containsBracket = { truth: false, firstLocation: 0 };
   let containsFunction = { truth: false, firstLocation: 0 };
   let containsMultiplication = { truth: false, firstLocation: 0 };
   for (let i = 0; i < parsedEquation.length; i++) {
-    if (parsedEquation[i].constructor ===Array) continue
+    if (parsedEquation[i].constructor === Array) continue;
     const parseType = getParseType(parsedEquation[i]);
     // console.log(i, parsedEquation[i], parseType);
     switch (parseType) {
@@ -37,7 +38,7 @@ function solver(parsedEquation) {
         break;
     }
   }
-  console.log(containsBracket, containsFunction, containsMultiplication);
+  // console.log(containsBracket, containsFunction, containsMultiplication);
   if (containsBracket.truth === true) {
     for (
       let i = parsedEquation.length - 1;
@@ -53,7 +54,8 @@ function solver(parsedEquation) {
           i - containsBracket.firstLocation + 1,
           evaluatedResult
         );
-        solver(parsedEquation)
+        parsedEquation = solver(parsedEquation);
+        return parsedEquation
       }
     }
     const evaluatedResult = solver(
@@ -64,17 +66,36 @@ function solver(parsedEquation) {
       parsedEquation.length - containsBracket.firstLocation + 1,
       evaluatedResult
     );
-    solver(parsedEquation);
-  }
-  if (containsFunction.truth === true) {
+    parsedEquation = solver(parsedEquation);
+    return parsedEquation
+  } else if (containsFunction.truth === true) {
     const evaluatedResult = `_${
       parsedEquation[containsFunction.firstLocation]
     } ${parsedEquation[containsFunction.firstLocation + 1]}`;
     parsedEquation.splice(containsFunction.firstLocation, 2, evaluatedResult);
-    solver(parsedEquation);
+    parsedEquation = solver(parsedEquation);
+    return parsedEquation
+  } else if (containsMultiplication.truth === true) {
+    const evaluatedResult = `${
+      parsedEquation[containsMultiplication.firstLocation - 1]
+    } ${parsedEquation[containsMultiplication.firstLocation]} ${
+      parsedEquation[containsMultiplication.firstLocation + 1]
+    }`;
+    parsedEquation.splice(
+      containsMultiplication.firstLocation - 1,
+      3,
+      evaluatedResult
+    );
+    parsedEquation = solver(parsedEquation)
+    return parsedEquation
+
+  } else {
+    const evaluatedResult = `${parsedEquation[0]} ${parsedEquation[1]} ${parsedEquation[2]}`;
+    parsedEquation.splice(0, 3, evaluatedResult);
+    parsedEquation = solver(parsedEquation)
+    return parsedEquation
   }
-  return parsedEquation;
 }
 
-console.log(solver(["ln", "(", "15", "*", "3", ")", "+", "12"]));
+// console.log(solver(["ln", "(", "15", "*", "3", ")", "+", "12"]));
 // console.log(solver(["ln", "(", "15", "*", "3"]))
