@@ -1,5 +1,5 @@
 function getParseType(char) {
-  if (char.match(/\d/)) return "number";
+  if (char.match(/[\d\.]/)) return "number";
   if (char.match(/[\+\-\*\/]/)) return "operator";
   if (char.match(/[\(\)]/)) return "bracket";
   return "function";

@@ -8,7 +8,7 @@ const calculator = {
   solve: function () {
     const result = solver(parser(this.buffer));
     console.log(result);
-    display.innerText = "Solution";
+    display.innerText = result;
     this.buffer = "";
   },
   "+" : function (a, b) {
