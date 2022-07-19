@@ -7,95 +7,112 @@ function getParseType(char) {
   return "function";
 }
 
-function solver(parsedEquation) {
-  console.log(parsedEquation);
-  if (parsedEquation.length === 1) return parsedEquation[0];
-  let containsBracket = { truth: false, firstLocation: 0 };
-  let containsFunction = { truth: false, firstLocation: 0 };
-  let containsMultiplication = { truth: false, firstLocation: 0 };
+function checkSolvingOrder(parsedEquation) {
+  let operations = {
+    containsBracket: { truth: false, firstLocation: 0 },
+    containsFunction: { truth: false, firstLocation: 0 },
+    containsMultiplication: { truth: false, firstLocation: 0 },
+  };
   for (let i = 0; i < parsedEquation.length; i++) {
     if (parsedEquation[i].constructor === Array) continue;
     const parseType = getParseType(parsedEquation[i]);
-    // console.log(i, parsedEquation[i], parseType);
     switch (parseType) {
       case "bracket":
-        if (containsBracket.truth === false) {
-          containsBracket.truth = true;
-          containsBracket.firstLocation = i;
+        if (operations.containsBracket.truth === false) {
+          operations.containsBracket.truth = true;
+          operations.containsBracket.firstLocation = i;
         }
         break;
       case "function":
-        if (containsFunction.truth === false) {
-          containsFunction.truth = true;
-          containsFunction.firstLocation = i;
+        if (operations.containsFunction.truth === false) {
+          operations.containsFunction.truth = true;
+          operations.containsFunction.firstLocation = i;
         }
         break;
       case "multiplication-operator":
-        if (containsMultiplication.truth === false) {
-          containsMultiplication.truth = true;
-          containsMultiplication.firstLocation = i;
+        if (operations.containsMultiplication.truth === false) {
+          operations.containsMultiplication.truth = true;
+          operations.containsMultiplication.firstLocation = i;
         }
         break;
     }
   }
-  // console.log(containsBracket, containsFunction, containsMultiplication);
-  if (containsBracket.truth === true) {
+  return operations;
+}
+
+function solver(parsedEquation) {
+  if (parsedEquation.length === 1) return parsedEquation[0];
+  const operations = checkSolvingOrder(parsedEquation);
+  if (operations.containsBracket.truth === true) {
+    let openBracketCounter = 0;
     for (
-      let i = parsedEquation.length - 1;
-      i > containsBracket.firstLocation;
-      i--
+      let i = operations.containsBracket.firstLocation + 1;
+      parsedEquation.length;
+      i++
     ) {
+      if (parsedEquation[i] === "(") openBracketCounter++;
       if (parsedEquation[i] === ")") {
+        if (openBracketCounter === 0) {
         const evaluatedResult = solver(
-          parsedEquation.slice(containsBracket.firstLocation + 1, i)
+          parsedEquation.slice(operations.containsBracket.firstLocation + 1, i)
         );
         parsedEquation.splice(
-          containsBracket.firstLocation,
-          i - containsBracket.firstLocation + 1,
+          operations.containsBracket.firstLocation,
+          i - operations.containsBracket.firstLocation + 1,
           evaluatedResult
         );
         parsedEquation = solver(parsedEquation);
-        return parsedEquation
+        return parsedEquation;
+        }
+        openBracketCounter--;
+        continue;
       }
     }
     const evaluatedResult = solver(
-      parsedEquation.slice(containsBracket.firstLocation + 1)
+      parsedEquation.slice(operations.containsBracket.firstLocation + 1)
     );
     parsedEquation.splice(
-      containsBracket.firstLocation,
-      parsedEquation.length - containsBracket.firstLocation + 1,
+      operations.containsBracket.firstLocation,
+      parsedEquation.length - operations.containsBracket.firstLocation + 1,
       evaluatedResult
     );
     parsedEquation = solver(parsedEquation);
-    return parsedEquation
-  } else if (containsFunction.truth === true) {
+    return parsedEquation;
+  }
+  if (operations.containsFunction.truth === true) {
     const evaluatedResult = `_${
-      parsedEquation[containsFunction.firstLocation]
-    } ${parsedEquation[containsFunction.firstLocation + 1]}`;
-    parsedEquation.splice(containsFunction.firstLocation, 2, evaluatedResult);
+      parsedEquation[operations.containsFunction.firstLocation]
+    } ${parsedEquation[operations.containsFunction.firstLocation + 1]}`;
+    parsedEquation.splice(
+      operations.containsFunction.firstLocation,
+      2,
+      evaluatedResult
+    );
     parsedEquation = solver(parsedEquation);
-    return parsedEquation
-  } else if (containsMultiplication.truth === true) {
+    return parsedEquation;
+  }
+  if (operations.containsMultiplication.truth === true) {
     const evaluatedResult = `${
-      parsedEquation[containsMultiplication.firstLocation - 1]
-    } ${parsedEquation[containsMultiplication.firstLocation]} ${
-      parsedEquation[containsMultiplication.firstLocation + 1]
+      parsedEquation[operations.containsMultiplication.firstLocation - 1]
+    } ${parsedEquation[operations.containsMultiplication.firstLocation]} ${
+      parsedEquation[operations.containsMultiplication.firstLocation + 1]
     }`;
     parsedEquation.splice(
-      containsMultiplication.firstLocation - 1,
+      operations.containsMultiplication.firstLocation - 1,
       3,
       evaluatedResult
     );
-    parsedEquation = solver(parsedEquation)
-    return parsedEquation
-
-  } else {
+    parsedEquation = solver(parsedEquation);
+    return parsedEquation;
+  }
+  {
     const evaluatedResult = `${parsedEquation[0]} ${parsedEquation[1]} ${parsedEquation[2]}`;
     parsedEquation.splice(0, 3, evaluatedResult);
-    parsedEquation = solver(parsedEquation)
-    return parsedEquation
+    parsedEquation = solver(parsedEquation);
+    return parsedEquation;
   }
 }
 
 // console.log(solver(["ln", "(", "15", "*", "3", ")", "+", "12"]));
 // console.log(solver(["ln", "(", "15", "*", "3"]))
+// console.log(solver(["(", "15", "*", "3", ")", "+", "(", "15", "*", "3", ")"]));
