@@ -53,16 +53,19 @@ function solver(parsedEquation) {
       if (parsedEquation[i] === "(") openBracketCounter++;
       if (parsedEquation[i] === ")") {
         if (openBracketCounter === 0) {
-        const evaluatedResult = solver(
-          parsedEquation.slice(operations.containsBracket.firstLocation + 1, i)
-        );
-        parsedEquation.splice(
-          operations.containsBracket.firstLocation,
-          i - operations.containsBracket.firstLocation + 1,
-          evaluatedResult
-        );
-        parsedEquation = solver(parsedEquation);
-        return parsedEquation;
+          const evaluatedResult = solver(
+            parsedEquation.slice(
+              operations.containsBracket.firstLocation + 1,
+              i
+            )
+          );
+          parsedEquation.splice(
+            operations.containsBracket.firstLocation,
+            i - operations.containsBracket.firstLocation + 1,
+            evaluatedResult
+          );
+          parsedEquation = solver(parsedEquation);
+          return parsedEquation;
         }
         openBracketCounter--;
         continue;
@@ -93,9 +96,7 @@ function solver(parsedEquation) {
   }
   if (operations.containsMultiplication.truth === true) {
     const evaluatedResult = `${
-      parsedEquation[operations.containsMultiplication.firstLocation - 1]
-    } ${parsedEquation[operations.containsMultiplication.firstLocation]} ${
-      parsedEquation[operations.containsMultiplication.firstLocation + 1]
+      calculator[parsedEquation[1]](parsedEquation[0], parsedEquation[2])
     }`;
     parsedEquation.splice(
       operations.containsMultiplication.firstLocation - 1,
@@ -105,14 +106,16 @@ function solver(parsedEquation) {
     parsedEquation = solver(parsedEquation);
     return parsedEquation;
   }
+  // addition
   {
-    const evaluatedResult = `${parsedEquation[0]} ${parsedEquation[1]} ${parsedEquation[2]}`;
+    const evaluatedResult = `${
+      calculator[parsedEquation[1]](parsedEquation[0], parsedEquation[2])
+    }`;
     parsedEquation.splice(0, 3, evaluatedResult);
     parsedEquation = solver(parsedEquation);
     return parsedEquation;
   }
 }
 
-// console.log(solver(["ln", "(", "15", "*", "3", ")", "+", "12"]));
-// console.log(solver(["ln", "(", "15", "*", "3"]))
-// console.log(solver(["(", "15", "*", "3", ")", "+", "(", "15", "*", "3", ")"]));
+
+console.log(solver(["(", "12", "-", "15", ")", "*", "(", "5", "+", "3", ")"]));

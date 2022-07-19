@@ -1,18 +1,5 @@
 const display = document.querySelector(".display");
-const calculator = {
-  buffer: "",
-  btnPres: function (btn) {
-    console.log(btn);
-    this.buffer += btn;
-    display.innerText = this.buffer;
-  },
-  solve: function () {
-    parser(this.buffer);
-    console.log("solving");
-    display.innerText = "Solution";
-    this.buffer = "";
-  },
-};
+
 
 const setupButtonRow = function (buttons) {
   const buttonRowDiv = document.createElement("div");
