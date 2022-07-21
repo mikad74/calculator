@@ -1,6 +1,3 @@
-const display = document.querySelector(".display");
-
-
 const setupButtonRow = function (buttons) {
   const buttonRowDiv = document.createElement("div");
   buttonRowDiv.classList.add("button-row");
@@ -9,10 +6,17 @@ const setupButtonRow = function (buttons) {
     button.classes.forEach((elClass) => {
       buttonEl.classList.add(elClass);
     });
-    buttonEl.innerText = button.text;
+    if (button.rawText === undefined) {
+      button.rawText = button.labelText;
+    }
+    if (button.displayText === undefined) {
+      button.displayText = button.labelText;
+    }
+    buttonEl.innerHTML = button.labelText;
     if (!button.classes.includes("enter-btn")) {
       buttonEl.addEventListener("click", function () {
-        calculator.btnPres(button.text);
+        calculator.btnPres(button.displayText, button.rawText);
+        // TODO: pass through right texts for button
       });
     } else {
       buttonEl.addEventListener("click", function () {
@@ -30,24 +34,55 @@ const setupButtons = function () {
   const primaryOperatorSymbol = ["+", "-", `*`, `/`];
   let currentRow = [];
   for (let i = 0; i < 10; i++) {
-    currentRow.push({ text: `${i}`, classes: ["num-btn", `butn-${i}`] });
+    currentRow.push({ labelText: `${i}`, classes: ["num-btn", `butn-${i}`] });
     if (i === 0) {
-      currentRow.push({ text: ".", classes: ["num-btn", "butn-dot"] });
-      currentRow.push({ text: "enter", classes: ["enter-btn"] });
+      currentRow.push({ labelText: ".", classes: ["num-btn", "butn-dot"] });
+      currentRow.push({
+        labelText: "(\u2012)",
+        displayText: "\u2012",
+        rawText: "*\u2012",
+        classes: ["num-btn", "butn-negate"],
+      });
+      currentRow.push({ labelText: "enter", classes: ["enter-btn"] });
     }
     if (i % 3 == 0) {
-      const operatorButton = primaryOperations[i / 3];
-      const operatorSymbol = primaryOperatorSymbol[i / 3];
-      currentRow.push({
-        text: `${operatorSymbol}`,
-        classes: ["operator-btn", `${operatorButton}-btn`],
-      });
+      if (i != 0) {
+        const operatorButton = primaryOperations[i / 3 - 1];
+        const operatorSymbol = primaryOperatorSymbol[i / 3 - 1];
+        currentRow.push({
+          labelText: `${operatorSymbol}`,
+          classes: ["operator-btn", `${operatorButton}-btn`],
+        });
+      }
       const buttonRowDiv = setupButtonRow(currentRow);
       currentRow = [];
       buttonRowDiv.classList.add("buttonRow");
       buttonBox.appendChild(buttonRowDiv);
     }
   }
+  let firstFunctionRow = [];
+  firstFunctionRow.push({
+    labelText: "x<sup>-1</sup>",
+    classes: ["operator-btn", "inverse-btn"],
+    displayText: "<sup>-1</sup>",
+    rawText: "^(-1)",
+  });
+  firstFunctionRow.push({
+    labelText: "(",
+    classes: ["bracket-btn", "open-bracket-btn"],
+  });
+  firstFunctionRow.push({
+    labelText: ")",
+    classes: ["bracket-btn", "close-bracket-btn"],
+  });
+  firstFunctionRow.push({
+    labelText: `${primaryOperatorSymbol[3]}`,
+    classes: ["operator-btn", `${primaryOperations[3]}-btn`],
+  });
+  const buttonRowDiv = setupButtonRow(firstFunctionRow);
+  buttonRowDiv.classList.add("buttonRow");
+  buttonBox.appendChild(buttonRowDiv);
 };
 
+calculator.displayBuffer = document.querySelector(".display");
 setupButtons();

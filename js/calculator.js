@@ -1,28 +1,33 @@
 const calculator = {
-  buffer: "",
-  btnPres: function (btn) {
-    console.log(btn);
-    this.buffer += btn;
-    display.innerText = this.buffer;
+  displayBuffer: undefined,
+  rawBuffer: "",
+  btnPres: function (display, raw) {
+    this.rawBuffer += raw;
+    const currentDisplay = this.displayBuffer.innerHTML;
+    this.displayBuffer.innerHTML = currentDisplay + display;
+    console.log(parser(this.rawBuffer));
   },
   solve: function () {
-    const result = solver(parser(this.buffer));
+    console.log(this.rawBuffer);
+    console.log(parser(this.rawBuffer));
+    const result = solver(parser(this.rawBuffer));
     console.log(result);
-    display.innerText = result;
-    this.buffer = "";
+    this.displayBuffer.innerHTML = result;
+    this.rawBuffer = "";
   },
-  "+" : function (a, b) {
-    return Number(a) + Number(b)
+  "+": function (a, b) {
+    return Number(a) + Number(b);
   },
-  "-" : function (a, b) {
-    return Number(a) - Number(b)
+  "-": function (a) {
+    return Number(-a);
   },
-  "*" : function (a, b) {
-    return Number(a) * Number(b)
+  "*": function (a, b) {
+    return Number(a) * Number(b);
   },
-  "/" : function (a, b) {
-    return Number(a) / Number(b)
+  "/": function (a, b) {
+    return Number(a) / Number(b);
+  },
+  "^": function (a, b) {
+    return Math.pow(Number(a), Number(b));
   },
 };
-
-
