@@ -73,7 +73,7 @@ function parser(str) {
         break;
       }
       // console.log(currentParseType)
-      currentStringParse += workingString.slice(i, i + 1);
+      currentStringParse += currentParseType !== "subtract-operator" ? workingString.slice(i, i + 1): symbols.negate;
       i++;
       if (i > 200) break;
     }

@@ -89,8 +89,9 @@ function solver(parsedEquation) {
     return parsedEquation;
   }
   if (operations.containsFunction.truth === true) {
+    const index = operations.containsFunction.firstLocation
     const evaluatedResult = `${
-      calculator[symbols.getKeyByValue(parsedEquation[0])](parsedEquation[1], parsedEquation[2])
+      calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index + 1])
     }`;
     parsedEquation.splice(
       operations.containsFunction.firstLocation,
@@ -101,8 +102,9 @@ function solver(parsedEquation) {
     return parsedEquation;
   }
   if (operations.containsExponentiation.truth === true) {
+    const index = operations.containsMultiplication.firstLocation
     const evaluatedResult = `${
-      calculator[symbols.getKeyByValue(parsedEquation[1])](parsedEquation[0], parsedEquation[2])
+      calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index - 1], parsedEquation[index + 1])
     }`;
     parsedEquation.splice(
       operations.containsExponentiation.firstLocation - 1,
@@ -113,8 +115,9 @@ function solver(parsedEquation) {
     return parsedEquation;
   }
   if (operations.containsMultiplication.truth === true) {
+    const index = operations.containsMultiplication.firstLocation
     const evaluatedResult = `${
-      calculator[symbols.getKeyByValue(parsedEquation[1])](parsedEquation[0], parsedEquation[2])
+      calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index-1], parsedEquation[index + 1])
     }`;
     parsedEquation.splice(
       operations.containsMultiplication.firstLocation - 1,
@@ -125,8 +128,10 @@ function solver(parsedEquation) {
     return parsedEquation;
   }
   if (operations.containsNegation.truth === true) {
+    const index = operations.containsNegation.firstLocation
+    console.log(parsedEquation)
     const evaluatedResult = `${
-      calculator[symbols.getKeyByValue(parsedEquation[0])](parsedEquation[1])
+      calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index + 1])
     }`;
     parsedEquation.splice(
       operations.containsNegation.firstLocation,
