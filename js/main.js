@@ -16,7 +16,6 @@ const setupButtonRow = function (buttons) {
     if (!button.classes.includes("enter-btn")) {
       buttonEl.addEventListener("click", function () {
         calculator.btnPres(button.displayText, button.rawText);
-        // TODO: pass through right texts for button
       });
     } else {
       buttonEl.addEventListener("click", function () {
@@ -31,16 +30,21 @@ const setupButtonRow = function (buttons) {
 const setupButtons = function () {
   const buttonBox = document.querySelector(".buttonbox");
   const primaryOperations = ["add", "subtract", "multiply", "divide"];
-  const primaryOperatorSymbol = ["+", "-", `*`, `/`];
+  const primaryOperatorSymbol = [
+    symbols["add"],
+    symbols["subtract"],
+    symbols["divide"],
+    symbols["multiply"],
+  ];
   let currentRow = [];
   for (let i = 0; i < 10; i++) {
     currentRow.push({ labelText: `${i}`, classes: ["num-btn", `butn-${i}`] });
     if (i === 0) {
       currentRow.push({ labelText: ".", classes: ["num-btn", "butn-dot"] });
       currentRow.push({
-        labelText: "(\u2012)",
-        displayText: "\u2012",
-        rawText: "*\u2012",
+        labelText: "( \u2011 )",
+        displayText: "\u2011",
+        rawText: "\u2011",
         classes: ["num-btn", "butn-negate"],
       });
       currentRow.push({ labelText: "enter", classes: ["enter-btn"] });

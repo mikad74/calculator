@@ -5,7 +5,6 @@ const calculator = {
     this.rawBuffer += raw;
     const currentDisplay = this.displayBuffer.innerHTML;
     this.displayBuffer.innerHTML = currentDisplay + display;
-    console.log(parser(this.rawBuffer));
   },
   solve: function () {
     console.log(this.rawBuffer);
@@ -15,19 +14,19 @@ const calculator = {
     this.displayBuffer.innerHTML = result;
     this.rawBuffer = "";
   },
-  "+": function (a, b) {
+  add: function (a, b) {
     return Number(a) + Number(b);
   },
-  "-": function (a) {
+  negate: function (a) {
     return Number(-a);
   },
-  "*": function (a, b) {
+  multiply: function (a, b) {
     return Number(a) * Number(b);
   },
-  "/": function (a, b) {
+  divide: function (a, b) {
     return Number(a) / Number(b);
   },
-  "^": function (a, b) {
+  exponentiate: function (a, b) {
     return Math.pow(Number(a), Number(b));
   },
 };
