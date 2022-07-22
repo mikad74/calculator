@@ -9,7 +9,6 @@ function checkSolvingOrder(parsedEquation) {
   for (let i = 0; i < parsedEquation.length; i++) {
     if (parsedEquation[i].constructor === Array) continue;
     const parseType = getParseType(parsedEquation[i]);
-    console.log(parseType)
     switch (parseType) {
       case "open-bracket" || "close-bracket":
         if (operations.containsBracket.truth === false) {
@@ -49,7 +48,6 @@ function checkSolvingOrder(parsedEquation) {
 function solver(parsedEquation) {
   if (parsedEquation.length === 1) return parsedEquation[0];
   const operations = checkSolvingOrder(parsedEquation);
-  console.log(operations, parsedEquation)
   if (operations.containsBracket.truth === true) {
     let openBracketCounter = 0;
     for (
@@ -103,7 +101,7 @@ function solver(parsedEquation) {
     return parsedEquation;
   }
   if (operations.containsExponentiation.truth === true) {
-    const index = operations.containsMultiplication.firstLocation
+    const index = operations.containsExponentiation.firstLocation
     const evaluatedResult = `${
       calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index - 1], parsedEquation[index + 1])
     }`;
@@ -117,11 +115,6 @@ function solver(parsedEquation) {
   }
   if (operations.containsNegation.truth === true) {
     const index = operations.containsNegation.firstLocation
-    console.log(parsedEquation)
-    console.log(parsedEquation[index])
-    console.log(parsedEquation[index + 1])
-    console.log(parsedEquation[index].length % 2)
-    console.log(getParseType(parsedEquation[index + 1]))
     if (!["number", "function", "open-bracket"].includes(getParseType(parsedEquation[index + 1]))) {
       parsedEquation.splice(
         index + 1,
@@ -129,8 +122,6 @@ function solver(parsedEquation) {
         solver(parsedEquation.slice(index + 1))
       )
     }
-    console.log(parsedEquation)
-    console.log(parsedEquation[index])
     const evaluatedResult = parsedEquation[index].length % 2 === 0 ? parsedEquation[index + 1] : calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index + 1])
     // const evaluatedResult = `${
     //   calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index + 1])

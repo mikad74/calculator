@@ -69,7 +69,7 @@ const setupButtons = function () {
     labelText: "x<sup>-1</sup>",
     classes: ["operator-btn", "inverse-btn"],
     displayText: "<sup>-1</sup>",
-    rawText: "^(-1)",
+    rawText: `^(${symbols.negate}1)`,
   });
   firstFunctionRow.push({
     labelText: "(",

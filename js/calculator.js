@@ -7,10 +7,10 @@ const calculator = {
     this.displayBuffer.innerHTML = currentDisplay + display;
   },
   solve: function () {
-    console.log(this.rawBuffer);
-    console.log(parser(this.rawBuffer));
+    // console.log(this.rawBuffer);
+    // console.log(parser(this.rawBuffer));
     const result = solver(parser(this.rawBuffer));
-    console.log(result);
+    // console.log(result);
     this.displayBuffer.innerHTML = result;
     this.rawBuffer = "";
   },

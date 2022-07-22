@@ -77,7 +77,7 @@ function parser(str) {
       i++;
       if (i > 200) break;
     }
-    console.log(currentParseType, previousParseType, parsedString);
+    // console.log(currentParseType, previousParseType, parsedString);
     workingString = workingString.slice(i);
     parsedString.push(currentStringParse);
     previousParseType = currentParseType;
