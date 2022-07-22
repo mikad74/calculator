@@ -1,6 +1,7 @@
 const calculator = {
   displayBuffer: undefined,
   rawBuffer: "",
+  history: [],
   btnPres: function (display, raw) {
     this.rawBuffer += raw;
     const currentDisplay = this.displayBuffer.innerHTML;
@@ -11,7 +12,8 @@ const calculator = {
     // console.log(parser(this.rawBuffer));
     const result = solver(parser(this.rawBuffer));
     // console.log(result);
-    this.displayBuffer.innerHTML = result;
+    this.displayBuffer.innerHTML = result + "<br>";
+    this.history.push(this.displayBuffer.innerHTML)
     this.rawBuffer = "";
   },
   add: function (a, b) {
