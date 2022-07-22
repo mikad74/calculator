@@ -75,6 +75,7 @@ function parser(str) {
       // console.log(currentParseType)
       currentStringParse += currentParseType !== "subtract-operator" ? workingString.slice(i, i + 1): symbols.negate;
       i++;
+      if (currentParseType === "close-bracket") break;
       if (i > 200) break;
     }
     // console.log(currentParseType, previousParseType, parsedString);

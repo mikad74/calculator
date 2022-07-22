@@ -35,6 +35,30 @@ body {
   padding: 15pt;
   margin: 20pt;
   margin-top: 50pt;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+.line {
+  flex: 0 0 auto;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: end;
+  font-size: 13pt;
+  font-weight: 600;
+}
+
+
+.input {
+  border: 2px solid black;
+}
+
+.output {
+  border: 2px solid red;
 }
 
 .buttonbox {

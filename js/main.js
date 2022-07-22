@@ -88,5 +88,5 @@ const setupButtons = function () {
   buttonBox.appendChild(buttonRowDiv);
 };
 
-calculator.displayBuffer = document.querySelector(".display");
+calculator.setupDisplay();
 setupButtons();

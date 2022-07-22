@@ -48,14 +48,16 @@ function checkSolvingOrder(parsedEquation) {
 function solver(parsedEquation) {
   if (parsedEquation.length === 1) return parsedEquation[0];
   const operations = checkSolvingOrder(parsedEquation);
+  console.log(operations, parsedEquation)
   if (operations.containsBracket.truth === true) {
     let openBracketCounter = 0;
     for (
       let i = operations.containsBracket.firstLocation + 1;
-      parsedEquation.length;
+      i < parsedEquation.length;
       i++
     ) {
       if (parsedEquation[i] === "(") openBracketCounter++;
+      console.log(openBracketCounter, parsedEquation[i], i)
       if (parsedEquation[i] === ")") {
         if (openBracketCounter === 0) {
           const evaluatedResult = solver(
@@ -73,8 +75,9 @@ function solver(parsedEquation) {
           return parsedEquation;
         }
         openBracketCounter--;
-        continue;
+        // continue;
       }
+      if (i > 100) break;
     }
     const evaluatedResult = solver(
       parsedEquation.slice(operations.containsBracket.firstLocation + 1)
