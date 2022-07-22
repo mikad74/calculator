@@ -9,8 +9,9 @@ function checkSolvingOrder(parsedEquation) {
   for (let i = 0; i < parsedEquation.length; i++) {
     if (parsedEquation[i].constructor === Array) continue;
     const parseType = getParseType(parsedEquation[i]);
+    console.log(parseType)
     switch (parseType) {
-      case "bracket":
+      case "open-bracket" || "close-bracket":
         if (operations.containsBracket.truth === false) {
           operations.containsBracket.truth = true;
           operations.containsBracket.firstLocation = i;
@@ -114,6 +115,34 @@ function solver(parsedEquation) {
     parsedEquation = solver(parsedEquation);
     return parsedEquation;
   }
+  if (operations.containsNegation.truth === true) {
+    const index = operations.containsNegation.firstLocation
+    console.log(parsedEquation)
+    console.log(parsedEquation[index])
+    console.log(parsedEquation[index + 1])
+    console.log(parsedEquation[index].length % 2)
+    console.log(getParseType(parsedEquation[index + 1]))
+    if (!["number", "function", "open-bracket"].includes(getParseType(parsedEquation[index + 1]))) {
+      parsedEquation.splice(
+        index + 1,
+        parsedEquation.length - (index + 1),
+        solver(parsedEquation.slice(index + 1))
+      )
+    }
+    console.log(parsedEquation)
+    console.log(parsedEquation[index])
+    const evaluatedResult = parsedEquation[index].length % 2 === 0 ? parsedEquation[index + 1] : calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index + 1])
+    // const evaluatedResult = `${
+    //   calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index + 1])
+    // }`;
+    parsedEquation.splice(
+      operations.containsNegation.firstLocation,
+      2,
+      `${evaluatedResult}`
+    );
+    parsedEquation = solver(parsedEquation);
+    return parsedEquation;
+  }
   if (operations.containsMultiplication.truth === true) {
     const index = operations.containsMultiplication.firstLocation
     const evaluatedResult = `${
@@ -122,20 +151,6 @@ function solver(parsedEquation) {
     parsedEquation.splice(
       operations.containsMultiplication.firstLocation - 1,
       3,
-      evaluatedResult
-    );
-    parsedEquation = solver(parsedEquation);
-    return parsedEquation;
-  }
-  if (operations.containsNegation.truth === true) {
-    const index = operations.containsNegation.firstLocation
-    console.log(parsedEquation)
-    const evaluatedResult = `${
-      calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index + 1])
-    }`;
-    parsedEquation.splice(
-      operations.containsNegation.firstLocation,
-      2,
       evaluatedResult
     );
     parsedEquation = solver(parsedEquation);
