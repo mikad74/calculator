@@ -52,6 +52,12 @@ body {
   font-weight: 600;
 }
 
+.padding {
+  min-width: 14pt;
+  flex: 1;
+  border: 2px solid green;
+}
+
 
 .input {
   border: 2px solid black;
@@ -59,6 +65,12 @@ body {
 
 .output {
   border: 2px solid red;
+}
+
+.output.overflow {
+  width: 100%;
+  text-align: right;
+  
 }
 
 .buttonbox {

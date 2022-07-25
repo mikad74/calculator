@@ -9,7 +9,7 @@ const calculator = {
     this.currentLine = document.createElement("div");
     this.currentLine.classList.add("line");
     this.currentLine.classList.add("current");
-    this.lineInput = document.createElement("span")
+    this.lineInput = document.createElement("div")
     this.lineInput.classList.add("input")
     this.currentLine.appendChild(this.lineInput)
     this.displayBuffer.appendChild(this.currentLine);
@@ -21,19 +21,24 @@ const calculator = {
     this.lineInput.innerHTML = currentDisplay + display;
   },
   solve: function () {
+    const inputWidth = document.querySelector(".current .input").offsetWidth
     this.currentLine.classList.remove("current")
-    const lineOutput = document.createElement("span")
+    const lineOutput = document.createElement("div")
     lineOutput.classList.add("output")
-    console.log(parser(this.rawBuffer))
     const result = solver(parser(this.rawBuffer));
-    console.log(result)
     lineOutput.innerHTML = result;
     this.currentLine.appendChild(lineOutput)
+    console.log(lineOutput.offsetWidth + inputWidth, this.currentLine.offsetWidth)
+    if (!(lineOutput.offsetWidth + inputWidth < this.currentLine.offsetWidth))
+    {
+      lineOutput.classList.add("overflow")
+    }
+
     this.history.push({display: this.currentLine, raw: this.rawBuffer})
     this.currentLine = document.createElement("div")
     this.currentLine.classList.add("line");
     this.currentLine.classList.add("current");
-    this.lineInput = document.createElement("span")
+    this.lineInput = document.createElement("div")
     this.lineInput.classList.add("input")
     this.currentLine.appendChild(this.lineInput)
     this.displayBuffer.appendChild(this.currentLine)
