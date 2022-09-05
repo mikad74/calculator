@@ -48,34 +48,43 @@ function parser(str) {
           parsedString.push("*");
         }
         break;
+      case "number":
+        if (["close-bracket"].includes(previousParseType)) {
+          parsedString.push("*");
+        }
+        break;
     }
     let i = 0;
     while (
       currentParseType === getParseType(workingString.slice(i, i + 1)) &&
       i < workingString.length
     ) {
-      switch(currentParseType) {
-      case "multiplication-operator":
-        if (
-          !["number", "close-bracket"].includes(previousParseType)
-            || i > 0
-        ) {
-          throw "Syntax Error"
-        }
-        break;
-      case "addition-operator":
-        if (
-          !["number", "close-bracket"].includes(previousParseType)
-            || i > 0
-        ) {
-          throw "Syntax Error"
-        }
-        break;
+      switch (currentParseType) {
+        case "multiplication-operator":
+          if (
+            !["number", "close-bracket"].includes(previousParseType) ||
+            i > 0
+          ) {
+            throw "Syntax Error";
+          }
+          break;
+        case "addition-operator":
+          if (
+            !["number", "close-bracket"].includes(previousParseType) ||
+            i > 0
+          ) {
+            throw "Syntax Error";
+          }
+          break;
       }
       // console.log(currentParseType)
-      currentStringParse += currentParseType !== "subtract-operator" ? workingString.slice(i, i + 1): symbols.negate;
+      currentStringParse +=
+        currentParseType !== "subtract-operator"
+          ? workingString.slice(i, i + 1)
+          : symbols.negate;
       i++;
       if (currentParseType === "close-bracket") break;
+      if (currentParseType === "open-bracket") break;
       if (i > 200) break;
     }
     // console.log(currentParseType, previousParseType, parsedString);
@@ -83,6 +92,6 @@ function parser(str) {
     parsedString.push(currentStringParse);
     previousParseType = currentParseType;
   }
-  if (previousParseType === "function") throw "Syntax Error"
+  if (previousParseType === "function") throw "Syntax Error";
   return parsedString;
 }

@@ -1,3 +1,5 @@
+// Script that defines all symbols used in the program.
+
 const symbols = {
   add: "+",
   subtract: "\u2012",

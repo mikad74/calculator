@@ -99,6 +99,7 @@ body {
   background-color: #d9b28a;
 }
 
+.button-row .store-var-btn,
 .button-row .enter-btn {
   font-size: 12pt;
 }

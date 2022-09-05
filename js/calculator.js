@@ -1,3 +1,5 @@
+// Heart of the calculator. This file deals with everything regarding the calculator itself
+
 const calculator = {
   displayBuffer: undefined,
   currentLine: undefined,
