@@ -92,6 +92,7 @@ function parser(str) {
     parsedString.push(currentStringParse);
     previousParseType = currentParseType;
   }
+  console.log(parsedString)
   if (previousParseType === "function") throw "Syntax Error";
   return parsedString;
 }

@@ -32,7 +32,7 @@ const setupButtons = function () {
   const numRowFunctions = ["store-var", "variable", "square"];
   const numRowFunctionSymbols = ["sto \u2192", "x", "x<sup>2</sup>"];
   const numRowFunctionsDisplay = ["\u2192", undefined, "<sup>2</sup>"];
-  const numRowFunctionsRaw = ["\u2192", undefined, "^<sup>2</sup>"];
+  const numRowFunctionsRaw = ["\u2192", undefined, "^(2)"];
   const primaryOperations = ["add", "subtract", "multiply", "divide"];
   const primaryOperatorSymbol = [
     symbols["add"],
