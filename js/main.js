@@ -13,13 +13,24 @@ const setupButtonRow = function (buttons) {
       button.displayText = button.labelText;
     }
     buttonEl.innerHTML = button.labelText;
-    if (!button.classes.includes("enter-btn")) {
+    if (button.classes.includes("enter-btn")) {
       buttonEl.addEventListener("click", function () {
-        calculator.btnPres(button.displayText, button.rawText);
+        calculator.solve();
+      });
+    } else if (
+      button.classes.includes("square-btn") ||
+      button.classes.includes("inverse-btn") ||
+      button.classes.includes("exp-btn")
+    ) {
+      buttonEl.addEventListener("click", function () {
+        calculator.btnPres(
+          button.rawText,
+          true
+        );
       });
     } else {
       buttonEl.addEventListener("click", function () {
-        calculator.solve();
+        calculator.btnPres(button.rawText);
       });
     }
     buttonRowDiv.appendChild(buttonEl);
@@ -31,7 +42,6 @@ const setupButtons = function () {
   const buttonBox = document.querySelector(".buttonbox");
   const numRowFunctions = ["store-var", "variable", "square"];
   const numRowFunctionSymbols = ["sto \u2192", "x", "x<sup>2</sup>"];
-  const numRowFunctionsDisplay = ["\u2192", undefined, "<sup>2</sup>"];
   const numRowFunctionsRaw = ["\u2192", undefined, "^(2)"];
   const primaryOperations = ["add", "subtract", "multiply", "divide"];
   const primaryOperatorSymbol = [
@@ -48,7 +58,6 @@ const setupButtons = function () {
       currentRow.push({ labelText: ".", classes: ["num-btn", "butn-dot"] });
       currentRow.push({
         labelText: "( \u2011 )",
-        displayText: "\u2011",
         rawText: "\u2011",
         classes: ["num-btn", "butn-negate"],
       });
@@ -57,12 +66,10 @@ const setupButtons = function () {
     if ((i + 2) % 3 == 0) {
       const numRowFunction = numRowFunctions[(i + 2) / 3 - 1];
       const numRowFunctionSymbol = numRowFunctionSymbols[(i + 2) / 3 - 1];
-      const numRowFunctionDisplay = numRowFunctionsDisplay[(i + 2) / 3 - 1];
       const numRowFunctionRaw = numRowFunctionsRaw[(i + 2) / 3 - 1];
       currentRow.push({
         labelText: `${numRowFunctionSymbol}`,
         rawText: `${numRowFunctionRaw}`,
-        displayText: `${numRowFunctionDisplay}`,
         classes: ["func-btn", `${numRowFunction}-btn`],
       });
     }
@@ -87,7 +94,6 @@ const setupButtons = function () {
   firstFunctionRow.push({
     labelText: "x<sup>-1</sup>",
     classes: ["operator-btn", "inverse-btn"],
-    displayText: "<sup>-1</sup>",
     rawText: `^(${symbols.negate}1)`,
   });
   firstFunctionRow.push({
