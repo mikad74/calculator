@@ -19,7 +19,7 @@ const calculator = {
   btnPres: function (raw, enclose = false) {
     this.currentLine = document.querySelector(".line.current");
     if (enclose === true) {
-      parsed = parser(this.rawBuffer);
+      let parsed = parser(this.rawBuffer);
       console.log(parsed);
       let closeBrackets = 0;
       let parseStart = 0;
@@ -36,17 +36,19 @@ const calculator = {
         }
         if (i === 0) parseStart = parsed.length - 1;
       }
-      enclosedRaw = `(${parsed.slice(parseStart).join("")}${raw})`
-      console.log(parseStart);
-      console.log(parsed, enclosedRaw);
-      console.log(parsed.slice(0, parseStart).join('') + enclosedRaw);
+      enclosedRaw = `(${parsed.slice(parseStart).join("")}${raw})`;
+      // console.log(parseStart);
+      // console.log(parsed, enclosedRaw);
+      // console.log(parsed.slice(0, parseStart).join("") + enclosedRaw);
       this.rawBuffer = parsed.slice(0, parseStart).join("") + enclosedRaw;
-      const currentDisplay = this.lineInput.innerHTML;
-      this.lineInput.innerHTML = currentDisplay + raw;
+      this.updateDisplay();
+      // const currentDisplay = this.lineInput.innerHTML;
+      // this.lineInput.innerHTML = currentDisplay + raw;
     } else {
       this.rawBuffer += raw;
-      const currentDisplay = this.lineInput.innerHTML;
-      this.lineInput.innerHTML = currentDisplay + raw;
+      this.updateDisplay();
+      // const currentDisplay = this.lineInput.innerHTML;
+      // this.lineInput.innerHTML = currentDisplay + raw;
     }
   },
   solve: function () {
@@ -75,6 +77,47 @@ const calculator = {
     this.displayBuffer.appendChild(this.currentLine);
     // this.history.push(this.displayBuffer.innerHTML)
     this.rawBuffer = "";
+  },
+  updateDisplay: function () {
+    let displayRaw = "";
+    console.log(this.rawBuffer, "updateDisplay rawBuffer");
+    let parsed = parser(this.rawBuffer);
+    console.log(parsed);
+    if (parsed[0] === "(" && parsed[parsed.length - 1] === ")") {
+      parsed = parsed.slice(1, parsed.length - 1);
+      // console.log(parsed, "eleminate brackets");
+    }
+    let openBracketCounter = 0;
+    let lastIncrement = 0;
+    let exponentiating = false;
+    let exponentCounter = 0;
+    for (let i = 0; i <= parsed.length; i++) {
+      if (parsed[i] === "(") {
+        if (exponentiating) {
+          parsed[i] = "<sup>";
+          exponentCounter = openBracketCounter;
+        }
+        openBracketCounter++;
+        lastIncrement = i;
+      }
+      if (parsed[i] === ")") {
+        openBracketCounter--;
+        if (exponentiating && openBracketCounter === exponentCounter) {
+          parsed[i] = "</sup>";
+          exponentiating = false;
+        }
+        else if (lastIncrement === i - 2) {
+          // remove the brackets
+          parsed[i] = "";
+          parsed[i - 2] = "";
+        }
+      }
+      if (parsed[i] === "^") {
+        exponentiating = true;
+      }
+    }
+    console.log(parsed.join(""))
+    this.lineInput.innerHTML = parsed.join("")
   },
   add: function (a, b) {
     return Number(a) + Number(b);
