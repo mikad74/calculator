@@ -6,6 +6,7 @@ function checkSolvingOrder(parsedEquation) {
     containsExponentiation: { truth: false, firstLocation: 0 },
     containsMultiplication: { truth: false, firstLocation: 0 },
     containsNegation: { truth: false, firstLocation: 0 },
+    containsStoreVar: { truth: false, firstLocation: 0 },
   };
   for (let i = 0; i < parsedEquation.length; i++) {
     if (parsedEquation[i].constructor === Array) continue;
@@ -50,15 +51,36 @@ function checkSolvingOrder(parsedEquation) {
           operations.containsNegation.firstLocation = i;
         }
         break;
+      case "store-var":
+        if (operations.containsStoreVar.truth === false) {
+          operations.containsStoreVar.truth = true;
+          operations.containsStoreVar.firstLocation = i;
+        }
+        break;
     }
   }
   return operations;
 }
 
 function solver(parsedEquation) {
-  if (parsedEquation.length === 1) return parsedEquation[0];
   const operations = checkSolvingOrder(parsedEquation);
-  console.log(operations, parsedEquation);
+  // console.log(operations, parsedEquation);
+  if (parsedEquation.length === 1 && operations.containsVariable.truth === false) return parsedEquation[0];
+  if (operations.containsStoreVar.truth === true) {
+    parsedEquationLength = parsedEquation.length;
+    const finalParseType = getParseType(parsedEquation[parsedEquationLength - 1]);
+    console.log(finalParseType);
+    if (
+      operations.containsStoreVar.firstLocation !== parsedEquationLength - 2 ||
+      finalParseType !== "variable"
+    ) {
+      throw "syntax error";
+    }
+    result = solver(parsedEquation.slice(0, parsedEquationLength - 2));
+    console.log(result, parsedEquation[parsedEquationLength - 1]);
+    calculator.variables[parsedEquation[parsedEquationLength - 1]] = result;
+    return result;
+  }
   if (operations.containsBracket.truth === true) {
     let openBracketCounter = 0;
     for (
@@ -67,7 +89,7 @@ function solver(parsedEquation) {
       i++
     ) {
       if (parsedEquation[i] === "(") openBracketCounter++;
-      console.log(openBracketCounter, parsedEquation[i], i);
+      // console.log(openBracketCounter, parsedEquation[i], i);
       if (parsedEquation[i] === ")") {
         if (openBracketCounter === 0) {
           const evaluatedResult = solver(
@@ -102,9 +124,8 @@ function solver(parsedEquation) {
   }
   if (operations.containsVariable.truth === true) {
     const index = operations.containsVariable.firstLocation;
-    const evaluatedResult =
-      `${calculator.variables[parsedEquation[index]]}`;
-    console.log(evaluatedResult);
+    const evaluatedResult = `${calculator.variables[parsedEquation[index]]}`;
+    // console.log(evaluatedResult);
     parsedEquation.splice(index, 1, evaluatedResult);
     parsedEquation = solver(parsedEquation);
     return parsedEquation;

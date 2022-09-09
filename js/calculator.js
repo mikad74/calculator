@@ -4,6 +4,7 @@ const calculator = {
   displayBuffer: undefined,
   currentLine: undefined,
   lineInput: undefined,
+  saveState: undefined,
   rawBuffer: "",
   history: [{ in: 0, out: 0 }],
   variables: {
@@ -31,12 +32,11 @@ const calculator = {
     if (operator) {
       if (this.rawBuffer.length === 0) {
         this.rawBuffer += this.history[this.history.length - 1].out;
-        console.log("Ans time");
       }
     }
     if (enclose === true) {
       let parsed = parser(this.rawBuffer);
-      console.log(parsed);
+      // console.log(parsed);
       let closeBrackets = 0;
       let parseStart = 0;
       for (let i = parsed.length - 1; i >= 0; i--) {
@@ -80,31 +80,39 @@ const calculator = {
     }
   },
   solve: function () {
-    const inputWidth = document.querySelector(".current .input").offsetWidth;
-    this.currentLine.classList.remove("current");
-    const lineOutput = document.createElement("div");
-    lineOutput.classList.add("output");
-    const result = solver(parser(this.rawBuffer));
-    lineOutput.innerHTML = result;
-    this.currentLine.appendChild(lineOutput);
-    console.log(
-      lineOutput.offsetWidth + inputWidth,
-      this.currentLine.offsetWidth
-    );
-    if (!(lineOutput.offsetWidth + inputWidth < this.currentLine.offsetWidth)) {
-      lineOutput.classList.add("overflow");
-    }
+    try {
+      const inputWidth = document.querySelector(".current .input").offsetWidth;
+      this.currentLine.classList.remove("current");
+      const lineOutput = document.createElement("div");
+      lineOutput.classList.add("output");
+      const result = solver(parser(this.rawBuffer));
+      lineOutput.innerHTML = result;
+      this.currentLine.appendChild(lineOutput);
+      // console.log(
+      //   lineOutput.offsetWidth + inputWidth,
+      //   this.currentLine.offsetWidth
+      // );
+      if (!(lineOutput.offsetWidth + inputWidth < this.currentLine.offsetWidth)) {
+        lineOutput.classList.add("overflow");
+      }
 
-    this.history.push({ in: this.rawBuffer, out: result });
-    this.currentLine = document.createElement("div");
-    this.currentLine.classList.add("line");
-    this.currentLine.classList.add("current");
-    this.lineInput = document.createElement("div");
-    this.lineInput.classList.add("input");
-    this.currentLine.appendChild(this.lineInput);
-    this.displayBuffer.appendChild(this.currentLine);
-    this.rawBuffer = "";
-    console.log(this.history);
+      this.history.push({ in: this.rawBuffer, out: result });
+      this.currentLine = document.createElement("div");
+      this.currentLine.classList.add("line");
+      this.currentLine.classList.add("current");
+      this.lineInput = document.createElement("div");
+      this.lineInput.classList.add("input");
+      this.currentLine.appendChild(this.lineInput);
+      this.displayBuffer.appendChild(this.currentLine);
+      this.rawBuffer = "";
+      // console.log(this.history);
+    }
+    catch(err) {
+      this.saveState = this.displayBuffer;
+      this.displayBuffer.innerHTML = `<div class='error'>${err}</div>`
+      console.log("syntax error")
+
+    }
   },
   updateDisplay: function () {
     let parsed = parser(this.rawBuffer);
@@ -137,7 +145,6 @@ const calculator = {
         exponentiating = true;
       }
     }
-    console.log(parsed.join(""));
     this.lineInput.innerHTML = parsed.join("");
   },
   add: function (a, b) {

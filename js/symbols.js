@@ -10,6 +10,7 @@ const symbols = {
   decimal: ".",
   openBracket: "(",
   closeBracket: ")",
+  storeVar: "\u2192",
 
   regEx: function (property) {
     let re = new RegExp("\\" + this[property]);
