@@ -1,6 +1,7 @@
 // Script that defines all symbols used in the program.
 
 const symbols = {
+  rewrite: "\u21d4",
   add: "+",
   subtract: "\u2012",
   multiply: "*",

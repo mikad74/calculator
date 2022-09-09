@@ -110,31 +110,34 @@ const calculator = {
     catch(err) {
       this.saveState = this.displayBuffer;
       this.displayBuffer.innerHTML = `<div class='error'>${err}</div>`
-      console.log("syntax error")
+      console.log(err)
 
     }
   },
   updateDisplay: function () {
     let parsed = parser(this.rawBuffer);
+    console.log(parsed)
     let openBracketCounter = 0;
     let lastIncrement = 0;
     let exponentiating = false;
     let exponentCounter = 0;
-    for (let i = 0; i <= parsed.length; i++) {
+    for (let i = 0; i < parsed.length; i++) {
       if (parsed[i] === "(") {
+        openBracketCounter++;
         if (exponentiating) {
           parsed[i] = "<sup>";
-          exponentCounter = openBracketCounter;
+          exponentCounter ++;
         }
-        openBracketCounter++;
         lastIncrement = i;
       }
+      console.log(exponentCounter, exponentiating, i)
       if (parsed[i] === ")") {
-        openBracketCounter--;
         if (exponentiating && openBracketCounter === exponentCounter) {
           parsed[i] = "</sup>";
-          exponentiating = false;
+          exponentCounter -- 
         }
+        if (exponentCounter === 0) exponentiating = false;
+        openBracketCounter--;
         // else if (lastIncrement === i - 2) {
         //   // remove the brackets
         //   parsed[i] = "";
@@ -143,8 +146,10 @@ const calculator = {
       }
       if (parsed[i] === "^") {
         exponentiating = true;
+        parsed[i] = ""
       }
     }
+    console.log(parsed)
     this.lineInput.innerHTML = parsed.join("");
   },
   add: function (a, b) {

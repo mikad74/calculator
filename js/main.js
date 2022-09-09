@@ -55,8 +55,9 @@ const setupButtons = function () {
   const numRowFunctions = ["store-var", "variable", "square"];
   const numRowFunctionSymbols = ["sto \u2192", "<span class='var-button-1'>x</span><span class='var-button-2'><div>yzt</div><div>abc</div></span>", "x<sup>2</sup>"];
   const numRowFunctionsRaw = ["\u2192", undefined, "^(2)"];
-  const primaryOperations = ["add", "subtract", "multiply", "divide"];
+  const primaryOperations = ["rewrite","add", "subtract", "multiply", "divide"];
   const primaryOperatorSymbol = [
+    symbols["rewrite"],
     symbols["add"],
     symbols["subtract"],
     symbols["divide"],
@@ -112,6 +113,11 @@ const setupButtons = function () {
   }
   let firstFunctionRow = [];
   firstFunctionRow.push({
+    labelText: "^",
+    classes: ["operator-btn", "exponentiate-btn"],
+    rawText: `^(`,
+  });
+  firstFunctionRow.push({
     labelText: "x<sup>-1</sup>",
     classes: ["operator-btn", "inverse-btn"],
     rawText: `^(${symbols.negate}1)`,
@@ -125,12 +131,129 @@ const setupButtons = function () {
     classes: ["bracket-btn", "close-bracket-btn"],
   });
   firstFunctionRow.push({
-    labelText: `${primaryOperatorSymbol[3]}`,
+    labelText: `${primaryOperatorSymbol[2]}`,
     classes: ["operator-btn", `${primaryOperations[3]}-btn`],
   });
-  const buttonRowDiv = setupButtonRow(firstFunctionRow);
-  buttonRowDiv.classList.add("buttonRow");
-  buttonBox.appendChild(buttonRowDiv);
+  const firstRowDiv = setupButtonRow(firstFunctionRow);
+  firstRowDiv.classList.add("buttonRow");
+  buttonBox.appendChild(firstRowDiv);
+  let secondFunctionRow = [];
+  secondFunctionRow.push({
+    labelText: "\u03c0",
+    classes: ["const-btn", "pi-btn"],
+  });
+  secondFunctionRow.push({
+    labelText: "sin",
+    classes: ["func-btn", "sin-btn"],
+  });
+  secondFunctionRow.push({
+    labelText: "cos",
+    classes: ["func-btn", "cos-btn"],
+  });
+  secondFunctionRow.push({
+    labelText: "tan",
+    classes: ["func-btn", "tan-btn"],
+  });
+  secondFunctionRow.push({
+    labelText: `${primaryOperatorSymbol[3]}`,
+    classes: ["operator-btn", `${primaryOperations[4]}-btn`],
+  });
+  const secondRowDif = setupButtonRow(secondFunctionRow);
+  secondRowDif.classList.add("buttonRow");
+  buttonBox.appendChild(secondRowDif);
+  let thirdFunctionRow = [];
+  thirdFunctionRow.push({
+    labelText: "ln",
+    classes: ["func-btn", "ln-btn"],
+  });
+  thirdFunctionRow.push({
+    labelText: "frac",
+    classes: ["layout-btn", "frac-btn"],
+  });
+  thirdFunctionRow.push({
+    labelText: "E",
+    classes: ["operator-btn", "e-btn"],
+  });
+  thirdFunctionRow.push({
+    labelText: "table",
+    classes: ["special-btn", "table-btn"],
+  });
+  thirdFunctionRow.push({
+    labelText: "clear",
+    classes: ["special-btn", "clear-btn"],
+  });
+  const thirdRowDif = setupButtonRow(thirdFunctionRow);
+  thirdRowDif.classList.add("buttonRow");
+  buttonBox.appendChild(thirdRowDif);
+  let fourthFunctionRow = []
+  fourthFunctionRow.push({
+    labelText: "2nd",
+    classes: ["special-btn", "shift-btn"],
+  });
+  fourthFunctionRow.push({
+    labelText: "mode",
+    classes: ["special-btn", "mode-btn"],
+  });
+  fourthFunctionRow.push({
+    labelText: "delete",
+    classes: ["special-btn", "delet-btn"],
+  });
+  let fifthFunctionRow = []
+  fifthFunctionRow.push({
+    labelText: "log",
+    classes: ["func-btn", "log-btn"],
+  });
+  fifthFunctionRow.push({
+    labelText: "prb",
+    classes: ["special-btn", "prb-btn"],
+  });
+  fifthFunctionRow.push({
+    labelText: "data",
+    classes: ["special-btn", "data-btn"],
+  });
+
+  const fourthRowDiv = setupButtonRow(fourthFunctionRow)
+  fourthRowDiv.classList.add('buttonRow')
+  const fifthRowDiv = setupButtonRow(fifthFunctionRow)
+  fifthRowDiv.classList.add('buttonRow')
+  const finalRowDif = document.createElement('div')
+  const buttonDiv = document.createElement('div')
+  buttonDiv.appendChild(fourthRowDiv)
+  buttonDiv.appendChild(fifthRowDiv)
+  buttonDiv.classList.add('button-div')
+  const dpadDiv = document.createElement('div')
+  dpadDiv.classList.add("dpad")
+  const dpadUp = document.createElement('div')
+  const dpadLeftRight = document.createElement('div')
+  const dpadDown = document.createElement('div')
+  const upButton = document.createElement('button')
+  upButton.innerText = "\u25b2"
+  upButton.classList.add("dpad-button")
+  dpadUp.appendChild(upButton)
+  const leftButton = document.createElement('button')
+  leftButton.classList.add("dpad-button")
+  leftButton.innerText = "\u25c0"
+  const rightButton = document.createElement('button')
+  rightButton.classList.add("dpad-button")
+  rightButton.innerText = "\u25b6"
+  dpadLeftRight.appendChild(leftButton)
+  dpadLeftRight.appendChild(rightButton)
+  const downButton = document.createElement('button')
+  downButton.classList.add("dpad-button")
+  downButton.innerText = "\u25bc"
+  dpadDown.appendChild(downButton)
+  dpadUp.appendChild(upButton)
+  dpadUp.classList.add('dpad-up')
+  dpadDiv.appendChild(dpadUp)
+  dpadDiv.appendChild(dpadLeftRight)
+  dpadLeftRight.classList.add('dpad-left-right')
+  dpadDiv.appendChild(dpadDown)
+  dpadDown.classList.add('dpad-down')
+  finalRowDif.appendChild(buttonDiv)
+  finalRowDif.appendChild(dpadDiv)
+  finalRowDif.classList.add("final-row")
+  buttonBox.appendChild(finalRowDif)
+
 };
 
 calculator.setupDisplay();

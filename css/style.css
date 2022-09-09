@@ -99,13 +99,20 @@ body {
 
 
 .buttonbox button {
-  font-size: 15pt;
+  font-size: 12pt;
+  font-weight: 600;
   margin: 6pt;
   border: 0;
   border-radius: 10px;
   color: #200e09;
   width: 15%;
   background-color: #d9b28a;
+}
+
+.button-row .const-btn,
+.button-row .operator-btn,
+.button-row .num-btn {
+  font-size: 15pt;
 }
 
 .button-row .store-var-btn,
@@ -131,4 +138,49 @@ body {
 .variable-btn .var-button-2 div {
   font-size: 10pt;
   font-style: italic;
+}
+.final-row {
+  height: 20%;
+  display: flex;
+}
+
+.button-div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.button-div .button-row button {
+  width: 25%;
+}
+
+.button-div .buttonRow {
+  height: 100%;
+}
+
+.dpad {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+}
+
+.dpad-up,
+.dpad-left-right,
+.dpad-down {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 33%;
+}
+
+.dpad-up button,
+.dpad-down button {
+  width: 40%;
+  height: 80%;
+}
+
+
+.dpad-left-right button {
+  width: 80%;
+  height: 80%;
 }
