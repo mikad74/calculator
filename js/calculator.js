@@ -5,7 +5,17 @@ const calculator = {
   currentLine: undefined,
   lineInput: undefined,
   rawBuffer: "",
-  history: [],
+  history: [{ in: 0, out: 0 }],
+  variables: {
+    "x\u2028": 0,
+    "y\u2028": 0,
+    "z\u2028": 0,
+    "t\u2028": 0,
+    "a\u2028": 0,
+    "b\u2028": 0,
+    "c\u2028": 0,
+  },
+  variableIterator: 0,
   setupDisplay: function () {
     this.displayBuffer = document.querySelector(".display");
     this.currentLine = document.createElement("div");
@@ -16,8 +26,14 @@ const calculator = {
     this.currentLine.appendChild(this.lineInput);
     this.displayBuffer.appendChild(this.currentLine);
   },
-  btnPres: function (raw, enclose = false) {
+  btnPres: function (raw, operator = false, enclose = false) {
     this.currentLine = document.querySelector(".line.current");
+    if (operator) {
+      if (this.rawBuffer.length === 0) {
+        this.rawBuffer += this.history[this.history.length - 1].out;
+        console.log("Ans time");
+      }
+    }
     if (enclose === true) {
       let parsed = parser(this.rawBuffer);
       console.log(parsed);
@@ -37,18 +53,30 @@ const calculator = {
         if (i === 0) parseStart = parsed.length - 1;
       }
       enclosedRaw = `(${parsed.slice(parseStart).join("")}${raw})`;
-      // console.log(parseStart);
-      // console.log(parsed, enclosedRaw);
-      // console.log(parsed.slice(0, parseStart).join("") + enclosedRaw);
       this.rawBuffer = parsed.slice(0, parseStart).join("") + enclosedRaw;
       this.updateDisplay();
-      // const currentDisplay = this.lineInput.innerHTML;
-      // this.lineInput.innerHTML = currentDisplay + raw;
     } else {
       this.rawBuffer += raw;
       this.updateDisplay();
-      // const currentDisplay = this.lineInput.innerHTML;
-      // this.lineInput.innerHTML = currentDisplay + raw;
+    }
+  },
+  variable: function () {
+    let previous = this.rawBuffer.slice(-2);
+    if (previous.length === 0) {
+      this.variableIterator = 0;
+      this.rawBuffer += Object.keys(this.variables)[this.variableIterator];
+      this.updateDisplay();
+    } else if (previous in this.variables) {
+      this.variableIterator =
+        (this.variableIterator + 1) % Object.keys(this.variables).length;
+      this.rawBuffer =
+        this.rawBuffer.slice(0, -2) +
+        Object.keys(this.variables)[this.variableIterator];
+      this.updateDisplay();
+    } else {
+      this.variableIterator = 0;
+      this.rawBuffer += Object.keys(this.variables)[this.variableIterator];
+      this.updateDisplay();
     }
   },
   solve: function () {
@@ -67,7 +95,7 @@ const calculator = {
       lineOutput.classList.add("overflow");
     }
 
-    this.history.push({ display: this.currentLine, raw: this.rawBuffer });
+    this.history.push({ in: this.rawBuffer, out: result });
     this.currentLine = document.createElement("div");
     this.currentLine.classList.add("line");
     this.currentLine.classList.add("current");
@@ -75,18 +103,11 @@ const calculator = {
     this.lineInput.classList.add("input");
     this.currentLine.appendChild(this.lineInput);
     this.displayBuffer.appendChild(this.currentLine);
-    // this.history.push(this.displayBuffer.innerHTML)
     this.rawBuffer = "";
+    console.log(this.history);
   },
   updateDisplay: function () {
-    let displayRaw = "";
-    console.log(this.rawBuffer, "updateDisplay rawBuffer");
     let parsed = parser(this.rawBuffer);
-    console.log(parsed);
-    if (parsed[0] === "(" && parsed[parsed.length - 1] === ")") {
-      parsed = parsed.slice(1, parsed.length - 1);
-      // console.log(parsed, "eleminate brackets");
-    }
     let openBracketCounter = 0;
     let lastIncrement = 0;
     let exponentiating = false;
@@ -106,18 +127,18 @@ const calculator = {
           parsed[i] = "</sup>";
           exponentiating = false;
         }
-        else if (lastIncrement === i - 2) {
-          // remove the brackets
-          parsed[i] = "";
-          parsed[i - 2] = "";
-        }
+        // else if (lastIncrement === i - 2) {
+        //   // remove the brackets
+        //   parsed[i] = "";
+        //   parsed[i - 2] = "";
+        // }
       }
       if (parsed[i] === "^") {
         exponentiating = true;
       }
     }
-    console.log(parsed.join(""))
-    this.lineInput.innerHTML = parsed.join("")
+    console.log(parsed.join(""));
+    this.lineInput.innerHTML = parsed.join("");
   },
   add: function (a, b) {
     return Number(a) + Number(b);

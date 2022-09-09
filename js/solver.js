@@ -2,13 +2,17 @@ function checkSolvingOrder(parsedEquation) {
   let operations = {
     containsBracket: { truth: false, firstLocation: 0 },
     containsFunction: { truth: false, firstLocation: 0 },
+    containsVariable: { truth: false, firstLocation: 0 },
     containsExponentiation: { truth: false, firstLocation: 0 },
     containsMultiplication: { truth: false, firstLocation: 0 },
     containsNegation: { truth: false, firstLocation: 0 },
   };
   for (let i = 0; i < parsedEquation.length; i++) {
     if (parsedEquation[i].constructor === Array) continue;
-    const parseType = getParseType(parsedEquation[i]);
+    let parseType = getParseType(parsedEquation[i]);
+    if (parseType === "variable" && !parsedEquation[i].length === 1) {
+      parseType = "function";
+    }
     switch (parseType) {
       case "open-bracket" || "close-bracket":
         if (operations.containsBracket.truth === false) {
@@ -20,6 +24,12 @@ function checkSolvingOrder(parsedEquation) {
         if (operations.containsFunction.truth === false) {
           operations.containsFunction.truth = true;
           operations.containsFunction.firstLocation = i;
+        }
+        break;
+      case "variable":
+        if (operations.containsVariable.truth === false) {
+          operations.containsVariable.truth = true;
+          operations.containsVariable.firstLocation = i;
         }
         break;
       case "multiplication-operator":
@@ -48,7 +58,7 @@ function checkSolvingOrder(parsedEquation) {
 function solver(parsedEquation) {
   if (parsedEquation.length === 1) return parsedEquation[0];
   const operations = checkSolvingOrder(parsedEquation);
-  console.log(operations, parsedEquation)
+  console.log(operations, parsedEquation);
   if (operations.containsBracket.truth === true) {
     let openBracketCounter = 0;
     for (
@@ -57,7 +67,7 @@ function solver(parsedEquation) {
       i++
     ) {
       if (parsedEquation[i] === "(") openBracketCounter++;
-      console.log(openBracketCounter, parsedEquation[i], i)
+      console.log(openBracketCounter, parsedEquation[i], i);
       if (parsedEquation[i] === ")") {
         if (openBracketCounter === 0) {
           const evaluatedResult = solver(
@@ -90,24 +100,29 @@ function solver(parsedEquation) {
     parsedEquation = solver(parsedEquation);
     return parsedEquation;
   }
+  if (operations.containsVariable.truth === true) {
+    const index = operations.containsVariable.firstLocation;
+    const evaluatedResult =
+      `${calculator.variables[parsedEquation[index]]}`;
+    console.log(evaluatedResult);
+    parsedEquation.splice(index, 1, evaluatedResult);
+    parsedEquation = solver(parsedEquation);
+    return parsedEquation;
+  }
   if (operations.containsFunction.truth === true) {
-    const index = operations.containsFunction.firstLocation
-    const evaluatedResult = `${
-      calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index + 1])
-    }`;
-    parsedEquation.splice(
-      operations.containsFunction.firstLocation,
-      2,
-      evaluatedResult
-    );
+    const index = operations.containsFunction.firstLocation;
+    const evaluatedResult = `${calculator[
+      symbols.getKeyByValue(parsedEquation[index])
+    ](parsedEquation[index + 1])}`;
+    parsedEquation.splice(index, 2, evaluatedResult);
     parsedEquation = solver(parsedEquation);
     return parsedEquation;
   }
   if (operations.containsExponentiation.truth === true) {
-    const index = operations.containsExponentiation.firstLocation
-    const evaluatedResult = `${
-      calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index - 1], parsedEquation[index + 1])
-    }`;
+    const index = operations.containsExponentiation.firstLocation;
+    const evaluatedResult = `${calculator[
+      symbols.getKeyByValue(parsedEquation[index])
+    ](parsedEquation[index - 1], parsedEquation[index + 1])}`;
     parsedEquation.splice(
       operations.containsExponentiation.firstLocation - 1,
       3,
@@ -117,15 +132,24 @@ function solver(parsedEquation) {
     return parsedEquation;
   }
   if (operations.containsNegation.truth === true) {
-    const index = operations.containsNegation.firstLocation
-    if (!["number", "function", "open-bracket"].includes(getParseType(parsedEquation[index + 1]))) {
+    const index = operations.containsNegation.firstLocation;
+    if (
+      !["number", "function", "open-bracket"].includes(
+        getParseType(parsedEquation[index + 1])
+      )
+    ) {
       parsedEquation.splice(
         index + 1,
         parsedEquation.length - (index + 1),
         solver(parsedEquation.slice(index + 1))
-      )
+      );
     }
-    const evaluatedResult = parsedEquation[index].length % 2 === 0 ? parsedEquation[index + 1] : calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index + 1])
+    const evaluatedResult =
+      parsedEquation[index].length % 2 === 0
+        ? parsedEquation[index + 1]
+        : calculator[symbols.getKeyByValue(parsedEquation[index])](
+            parsedEquation[index + 1]
+          );
     // const evaluatedResult = `${
     //   calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index + 1])
     // }`;
@@ -138,10 +162,10 @@ function solver(parsedEquation) {
     return parsedEquation;
   }
   if (operations.containsMultiplication.truth === true) {
-    const index = operations.containsMultiplication.firstLocation
-    const evaluatedResult = `${
-      calculator[symbols.getKeyByValue(parsedEquation[index])](parsedEquation[index-1], parsedEquation[index + 1])
-    }`;
+    const index = operations.containsMultiplication.firstLocation;
+    const evaluatedResult = `${calculator[
+      symbols.getKeyByValue(parsedEquation[index])
+    ](parsedEquation[index - 1], parsedEquation[index + 1])}`;
     parsedEquation.splice(
       operations.containsMultiplication.firstLocation - 1,
       3,
@@ -152,12 +176,11 @@ function solver(parsedEquation) {
   }
   // addition
   {
-    const evaluatedResult = `${
-      calculator[symbols.getKeyByValue(parsedEquation[1])](parsedEquation[0], parsedEquation[2])
-    }`;
+    const evaluatedResult = `${calculator[
+      symbols.getKeyByValue(parsedEquation[1])
+    ](parsedEquation[0], parsedEquation[2])}`;
     parsedEquation.splice(0, 3, evaluatedResult);
     parsedEquation = solver(parsedEquation);
     return parsedEquation;
   }
 }
-

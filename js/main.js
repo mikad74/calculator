@@ -17,21 +17,33 @@ const setupButtonRow = function (buttons) {
       buttonEl.addEventListener("click", function () {
         calculator.solve();
       });
+    } else if (button.classes.includes("variable-btn")) {
+      buttonEl.addEventListener("click", function () {
+        calculator.variable();
+      });
     } else if (
       button.classes.includes("square-btn") ||
-      button.classes.includes("inverse-btn") ||
-      button.classes.includes("exp-btn")
+      button.classes.includes("inverse-btn")
     ) {
-      buttonEl.addEventListener("click", function () {
-        calculator.btnPres(
-          button.rawText,
-          true
-        );
-      });
+      if (button.classes.includes("operator-btn")) {
+        buttonEl.addEventListener("click", function () {
+          calculator.btnPres(button.rawText, true, true);
+        });
+      } else {
+        buttonEl.addEventListener("click", function () {
+          calculator.btnPres(button.rawText, false, true);
+        });
+      }
     } else {
-      buttonEl.addEventListener("click", function () {
-        calculator.btnPres(button.rawText);
-      });
+      if (button.classes.includes("operator-btn")) {
+        buttonEl.addEventListener("click", function () {
+          calculator.btnPres(button.rawText, true);
+        });
+      } else {
+        buttonEl.addEventListener("click", function () {
+          calculator.btnPres(button.rawText);
+        });
+      }
     }
     buttonRowDiv.appendChild(buttonEl);
   });
@@ -67,11 +79,19 @@ const setupButtons = function () {
       const numRowFunction = numRowFunctions[(i + 2) / 3 - 1];
       const numRowFunctionSymbol = numRowFunctionSymbols[(i + 2) / 3 - 1];
       const numRowFunctionRaw = numRowFunctionsRaw[(i + 2) / 3 - 1];
-      currentRow.push({
-        labelText: `${numRowFunctionSymbol}`,
-        rawText: `${numRowFunctionRaw}`,
-        classes: ["func-btn", `${numRowFunction}-btn`],
-      });
+      if (i === 4) {
+        currentRow.push({
+          labelText: `${numRowFunctionSymbol}`,
+          rawText: `${numRowFunctionRaw}`,
+          classes: ["func-btn", `${numRowFunction}-btn`],
+        });
+      } else {
+        currentRow.push({
+          labelText: `${numRowFunctionSymbol}`,
+          rawText: `${numRowFunctionRaw}`,
+          classes: ["operator-btn", `${numRowFunction}-btn`],
+        });
+      }
     }
     if (i !== 0)
       currentRow.push({ labelText: `${i}`, classes: ["num-btn", `butn-${i}`] });
