@@ -108,3 +108,18 @@ body {
   height: 56px;
   background-color: #687f58;
 }
+
+.variable-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.variable-btn .var-button-1 {
+  font-size: 17pt;
+}
+
+.variable-btn .var-button-2 div {
+  font-size: 10pt;
+  font-style: italic;
+}

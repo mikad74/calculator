@@ -53,7 +53,7 @@ const setupButtonRow = function (buttons) {
 const setupButtons = function () {
   const buttonBox = document.querySelector(".buttonbox");
   const numRowFunctions = ["store-var", "variable", "square"];
-  const numRowFunctionSymbols = ["sto \u2192", "x", "x<sup>2</sup>"];
+  const numRowFunctionSymbols = ["sto \u2192", "<span class='var-button-1'>x</span><span class='var-button-2'><div>yzt</div><div>abc</div></span>", "x<sup>2</sup>"];
   const numRowFunctionsRaw = ["\u2192", undefined, "^(2)"];
   const primaryOperations = ["add", "subtract", "multiply", "divide"];
   const primaryOperatorSymbol = [
