@@ -14,7 +14,8 @@ function getParseType(char) {
   if (char.match(symbols.regEx("openBracket"))) return "open-bracket";
   if (char.match(symbols.regEx("closeBracket"))) return "close-bracket";
   if (char.match(/[xyztabc\u2028]/)) return "variable";
-  if (char.match(symbols.regEx("storeVar"))) return "store-var"
+  if (char.match(symbols.regEx("storeVar"))) return "store-var";
+  if (char.match(symbols.regEx("pi"))) return "const";
   return "function";
 }
 
@@ -28,8 +29,10 @@ function parser(str) {
     let currentParseType = getParseType(workingString.slice(0, 1));
     if (workingString.length >= 2) {
       const nextParseType = getParseType(workingString.slice(1, 2));
-      if (currentParseType == "variable") {
-        if (nextParseType == "variable") {
+      const thirdParseType = getParseType(workingString.slice(2, 3));
+      console.log(currentParseType, nextParseType, workingString.slice(0,2))
+      if (currentParseType === "variable") {
+        if (nextParseType === "variable" && thirdParseType !== "function") {
           if (["number", "close-bracket"].includes(previousParseType))
             parsedString.push("*");
           parsedString.push(workingString.slice(0, 2));
@@ -39,46 +42,57 @@ function parser(str) {
         } else currentParseType = "function";
       }
     }
+    console.log(currentParseType);
     switch (currentParseType) {
       case "subtract-operator":
         if (
-          ["number", "function", "close-bracket"].includes(previousParseType)
+          ["number", "function", "close-bracket", "const"].includes(
+            previousParseType
+          )
         ) {
           parsedString.push("+");
         }
         break;
       case "negation-operator":
         if (
-          ["number", "function", "close-bracket"].includes(previousParseType)
+          ["number", "function", "close-bracket", "const"].includes(
+            previousParseType
+          )
         ) {
           parsedString.push("*");
         }
         break;
       case "function":
-        if (["number", "close-bracket"].includes(previousParseType)) {
+        if (["number", "close-bracket", "const"].includes(previousParseType)) {
           parsedString.push("*");
         }
         break;
       case "open-bracket":
-        if (["number", "close-bracket"].includes(previousParseType)) {
+        if (["number", "close-bracket", "const"].includes(previousParseType)) {
+          parsedString.push("*");
+        }
+        break;
+      case "const":
+        if (["number", "close-bracket", "const"].includes(previousParseType)) {
           parsedString.push("*");
         }
         break;
       case "number":
-        if (["close-bracket"].includes(previousParseType)) {
+        if (["close-bracket", "const"].includes(previousParseType)) {
           parsedString.push("*");
         }
         break;
     }
     let i = 0;
+    console.log(getParseType(workingString.slice(0,1)))
     while (
-      currentParseType === getParseType(workingString.slice(i, i + 1)) &&
+      (currentParseType === getParseType(workingString.slice(i, i + 1)) || i === 0) &&
       i < workingString.length
     ) {
       switch (currentParseType) {
         case "multiplication-operator":
           if (
-            !["number", "close-bracket", "variable"].includes(
+            !["number", "close-bracket", "variable", "const"].includes(
               previousParseType
             ) ||
             i > 0
@@ -88,7 +102,7 @@ function parser(str) {
           break;
         case "addition-operator":
           if (
-            !["number", "close-bracket", "variable"].includes(
+            !["number", "close-bracket", "variable", "const"].includes(
               previousParseType
             ) ||
             i > 0
@@ -104,15 +118,15 @@ function parser(str) {
       i++;
       if (currentParseType === "close-bracket") break;
       if (currentParseType === "open-bracket") break;
-      if (i > 200) break;
+      if (i > 20) break;
     }
     j++;
     workingString = workingString.slice(i);
     parsedString.push(currentStringParse);
     previousParseType = currentParseType;
-    if (j > 200) break;
+    if (j > 20) break;
   }
   // console.log(previousParseType);
-  if (previousParseType === "function") throw "Syntax Error";
+  // if (previousParseType === "function") throw "Syntax Error";
   return parsedString;
 }

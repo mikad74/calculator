@@ -16,6 +16,13 @@ const calculator = {
     "b\u2028": 0,
     "c\u2028": 0,
   },
+  constants: {
+  "\u03c0" : Math.PI
+  },
+  options: {
+    "angle": "rad",
+  },
+
   variableIterator: 0,
   setupDisplay: function () {
     this.displayBuffer = document.querySelector(".display");
@@ -167,4 +174,20 @@ const calculator = {
   exponentiate: function (a, b) {
     return Math.pow(Number(a), Number(b));
   },
-};
+  sin: function (a) {
+    if (this.options["angle"] === "deg") a = a * Math.PI / 180;
+    return Math.sin(a)
+    
+  },
+  cos: function (a) {
+    if (this.options["angle"] === "deg") a = a * Math.PI / 180;
+    return Math.cos(a)
+  },
+  tan: function (a) {
+    if (this.options["angle"] === "deg") a = a * Math.PI / 180;
+    return Math.tan(a)
+  },
+  ln: function (a) {
+    
+  },
+}

@@ -12,6 +12,11 @@ const symbols = {
   openBracket: "(",
   closeBracket: ")",
   storeVar: "\u2192",
+  pi: "\u03c0",
+  sin: "sin",
+  cos: "cos",
+  tan: "tan",
+  ln: "ln",
 
   regEx: function (property) {
     let re = new RegExp("\\" + this[property]);

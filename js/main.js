@@ -131,7 +131,7 @@ const setupButtons = function () {
     classes: ["bracket-btn", "close-bracket-btn"],
   });
   firstFunctionRow.push({
-    labelText: `${primaryOperatorSymbol[2]}`,
+    labelText: `${primaryOperatorSymbol[3]}`,
     classes: ["operator-btn", `${primaryOperations[3]}-btn`],
   });
   const firstRowDiv = setupButtonRow(firstFunctionRow);
@@ -144,18 +144,21 @@ const setupButtons = function () {
   });
   secondFunctionRow.push({
     labelText: "sin",
+    rawText: "sin(",
     classes: ["func-btn", "sin-btn"],
   });
   secondFunctionRow.push({
     labelText: "cos",
+    rawText: "cos(",
     classes: ["func-btn", "cos-btn"],
   });
   secondFunctionRow.push({
     labelText: "tan",
+    rawText: "tan(",
     classes: ["func-btn", "tan-btn"],
   });
   secondFunctionRow.push({
-    labelText: `${primaryOperatorSymbol[3]}`,
+    labelText: `${primaryOperatorSymbol[4]}`,
     classes: ["operator-btn", `${primaryOperations[4]}-btn`],
   });
   const secondRowDif = setupButtonRow(secondFunctionRow);
@@ -164,6 +167,7 @@ const setupButtons = function () {
   let thirdFunctionRow = [];
   thirdFunctionRow.push({
     labelText: "ln",
+    rawText: "ln(",
     classes: ["func-btn", "ln-btn"],
   });
   thirdFunctionRow.push({

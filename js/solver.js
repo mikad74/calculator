@@ -7,6 +7,7 @@ function checkSolvingOrder(parsedEquation) {
     containsMultiplication: { truth: false, firstLocation: 0 },
     containsNegation: { truth: false, firstLocation: 0 },
     containsStoreVar: { truth: false, firstLocation: 0 },
+    containsConst: { truth: false, firstLocation: 0 },
   };
   for (let i = 0; i < parsedEquation.length; i++) {
     if (parsedEquation[i].constructor === Array) continue;
@@ -15,6 +16,12 @@ function checkSolvingOrder(parsedEquation) {
       parseType = "function";
     }
     switch (parseType) {
+      case "const":
+        if (operations.containsConst.truth === false) {
+          operations.containsConst.truth = true;
+          operations.containsConst.firstLocation = i;
+        }
+        break;
       case "open-bracket" || "close-bracket":
         if (operations.containsBracket.truth === false) {
           operations.containsBracket.truth = true;
@@ -64,8 +71,16 @@ function checkSolvingOrder(parsedEquation) {
 
 function solver(parsedEquation) {
   const operations = checkSolvingOrder(parsedEquation);
-  // console.log(operations, parsedEquation);
+  console.log(operations, parsedEquation)
+  if (operations.containsConst.truth === true) {
+    console.log(parsedEquation[operations.containsConst.firstLocation])
+    console.log(calculator.constants)
+    parsedEquation[operations.containsConst.firstLocation] = `${calculator.constants[parsedEquation[operations.containsConst.firstLocation]]}`
+  }
   if (parsedEquation.length === 1 && operations.containsVariable.truth === false) return parsedEquation[0];
+  if (operations.containsConst.truth === true) {
+
+  }
   if (operations.containsStoreVar.truth === true) {
     parsedEquationLength = parsedEquation.length;
     const finalParseType = getParseType(parsedEquation[parsedEquationLength - 1]);
