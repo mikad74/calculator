@@ -9,13 +9,13 @@ const calculator = {
   cursor: 0,
   history: [{ in: 0, out: 0 }],
   variables: {
-    "x": 0,
-    "y": 0,
-    "z": 0,
-    "t": 0,
-    "a": 0,
-    "b": 0,
-    "c": 0,
+    x: 0,
+    y: 0,
+    z: 0,
+    t: 0,
+    a: 0,
+    b: 0,
+    c: 0,
   },
   constants: {
     "\u03c0": Math.PI,
@@ -44,14 +44,44 @@ const calculator = {
       }
     }
     if (enclose) {
-      let firstEncounter = this.state.type[this.state.type.length - 1]
-      let bracketCounter = 0
+      let firstEncounter = this.state.type[this.state.type.length - 1];
+      let bracketCounter = 0;
       if (firstEncounter === "close-bracket") {
-        bracketCounter ++
+        bracketCounter++;
       }
-      for (let i = this.state.type.length - 2; i > 0; i--) {
-        currentEncounter = this.state.type[i] // TODO implement the recursive loop
-
+      let i = 0;
+      for (i = this.state.type.length - 2; i > 0; i--) {
+        currentEncounter = this.state.type[i]; // TODO implement the recursive loop
+        if (currentEncounter === "number" && firstEncounter === "number") {
+          continue;
+        } else if (firstEncounter === "close-bracket") {
+          if (currentEncounter === "close-bracket") {
+            bracketCounter++;
+            continue;
+          }
+          if (currentEncounter === "open-bracket") {
+            bracketCounter--;
+            continue;
+          }
+          if (bracketCounter === 0) {
+            if (currentEncounter === "func") {
+              i--;
+              break;
+            }
+            if (currentEncounter === "exp" || "number") {
+              continue;
+            }
+            else break;
+          }
+        } else {
+          break;
+        }
+      }
+      if (firstEncounter !== "number") {
+        this.state.val.push(")");
+        this.state.type.push("close-bracket");
+        this.state.val.splice(i + 1, 0, "(");
+        this.state.type.splice(i + 1, 0, "open-bracket");
       }
     }
 
@@ -59,7 +89,7 @@ const calculator = {
     switch (type) {
       case "negate":
         if (
-          ["number", "func", "close-bracket", "const","var"].includes(
+          ["number", "func", "close-bracket", "const", "var"].includes(
             this.state.type[this.state.type.length - 1]
           )
         ) {
@@ -186,7 +216,7 @@ const calculator = {
     if (!previous) {
       this.variableIterator = 0;
       this.state.val.push(Object.keys(this.variables)[this.variableIterator]);
-      this.state.type.push("var")
+      this.state.type.push("var");
       this.updateDisplay();
     } else if (previous in this.variables) {
       this.variableIterator =
@@ -206,7 +236,7 @@ const calculator = {
         this.state.type.push("multiply");
       }
       this.state.val.push(Object.keys(this.variables)[this.variableIterator]);
-      this.state.type.push("var")
+      this.state.type.push("var");
       this.updateDisplay();
     }
   },
