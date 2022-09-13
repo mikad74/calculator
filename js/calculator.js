@@ -38,9 +38,20 @@ const calculator = {
   btnPres: function (raw, type, operator = false, enclose = false) {
     this.currentLine = document.querySelector(".line.current");
     if (operator) {
-      if (this.state.length === 0) {
+      if (this.state.val.length === 0) {
         this.state.val.push("Ans");
-        this.state.val.push("number");
+        this.state.type.push("number");
+      }
+    }
+    if (enclose) {
+      let firstEncounter = this.state.type[this.state.type.length - 1]
+      let bracketCounter = 0
+      if (firstEncounter === "close-bracket") {
+        bracketCounter ++
+      }
+      for (let i = this.state.type.length - 2; i > 0; i--) {
+        currentEncounter = this.state.type[i] // TODO implement the recursive loop
+
       }
     }
 
@@ -144,12 +155,6 @@ const calculator = {
     }
 
     this.updateDisplay(this.state);
-    // console.log(this.state.val, this.state.type);
-    // if (operator) {
-    //   if (this.state.length === 0) {
-    //     this.state += this.history[this.history.length - 1].out;
-    //   }
-    // }
     // if (enclose === true) {
     //   let parsed = parser(this.state);
     //   // console.log(parsed);

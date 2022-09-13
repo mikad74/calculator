@@ -23,7 +23,7 @@ const setupButtonRow = function (buttons) {
           calculator.btnPres(button.rawText, button.type, true, true);
       })
     } else {
-      if (button.type === "operator") {
+      if (["add", "sto", "exp", "multiply"].includes(button.type)) {
         buttonEl.addEventListener("click", function () {
           calculator.btnPres(button.rawText, true);
         });
