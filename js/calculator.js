@@ -50,6 +50,7 @@ const calculator = {
         bracketCounter++;
       }
       let i = 0;
+      console.log(this.state.type)
       for (i = this.state.type.length - 2; i > 0; i--) {
         currentEncounter = this.state.type[i]; // TODO implement the recursive loop
         if (currentEncounter === "number" && firstEncounter === "number") {
@@ -64,11 +65,12 @@ const calculator = {
             continue;
           }
           if (bracketCounter === 0) {
+            console.log(i)
             if (currentEncounter === "func") {
               i--;
               break;
             }
-            if (currentEncounter === "exp" || "number") {
+            if (currentEncounter === "exp" || currentEncounter === "number") {
               continue;
             }
             else break;
@@ -185,31 +187,6 @@ const calculator = {
     }
 
     this.updateDisplay(this.state);
-    // if (enclose === true) {
-    //   let parsed = parser(this.state);
-    //   // console.log(parsed);
-    //   let closeBrackets = 0;
-    //   let parseStart = 0;
-    //   for (let i = parsed.length - 1; i >= 0; i--) {
-    //     if (parsed[i] === ")") {
-    //       closeBrackets++;
-    //     }
-    //     if (parsed[i] === "(") {
-    //       closeBrackets--;
-    //       if (closeBrackets === 0) {
-    //         parseStart = i;
-    //         break;
-    //       }
-    //     }
-    //     if (i === 0) parseStart = parsed.length - 1;
-    //   }
-    //   enclosedRaw = `(${parsed.slice(parseStart).join("")}${raw})`;
-    //   this.state = parsed.slice(0, parseStart).join("") + enclosedRaw;
-    //   this.updateDisplay();
-    // } else {
-    //   this.state += raw;
-    //   this.updateDisplay();
-    // }
   },
   variable: function () {
     let previous = this.state.val[this.state.val.length - 1];
@@ -276,7 +253,41 @@ const calculator = {
     // }
   },
   updateDisplay: function () {
-    this.lineInput.innerHTML = this.state.val.join("");
+    console.log(this.state.val)
+    let parsed = Array.from(this.state.val)
+    let openBracketCounter = 0;
+    let exponentiating = false;
+    let exponentCounter = 0;
+    for (let i = 0; i < parsed.length; i++) {
+      if (parsed[i] === "(") {
+        openBracketCounter++;
+        if (exponentiating) {
+          parsed[i] = "<sup>";
+          exponentCounter ++;
+        }
+        lastIncrement = i;
+      }
+      console.log(exponentCounter, exponentiating, i)
+      if (parsed[i] === ")") {
+        if (exponentiating) {
+          parsed[i] = "</sup>";
+          exponentCounter --
+        }
+        if (exponentCounter === 0) exponentiating = false;
+        openBracketCounter--;
+        // else if (lastIncrement === i - 2) {
+        //   // remove the brackets
+        //   parsed[i] = "";
+        //   parsed[i - 2] = "";
+        // }
+      }
+      if (parsed[i] === "^") {
+        exponentiating = true;
+        parsed[i] = ""
+      }
+    }
+    console.log(parsed, this.state.val)
+    this.lineInput.innerHTML = parsed.join("");
   },
   //   console.log(parsed)
   //   let openBracketCounter = 0;
