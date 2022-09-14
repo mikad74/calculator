@@ -10,28 +10,42 @@ const setupButtonRow = function (buttons) {
       button.rawText = button.labelText;
     }
     buttonEl.innerHTML = button.labelText;
-    if (button.classes.includes("enter-btn")) {
-      buttonEl.addEventListener("click", function () {
-        calculator.solve();
-      });
-    } else if (button.type === "variable") {
-      buttonEl.addEventListener("click", function () {
-        calculator.variable();
-      });
-    } else if (["square", "invert"].includes(button.type)) {
+    switch (button.type) {
+      case "enter":
+        buttonEl.addEventListener("click", function () {
+          calculator.solve();
+        });
+        break;
+      case "clear":
+        buttonEl.addEventListener("click", function () {
+          calculator.clear();
+        });
+        break;
+      case "variable":
+        buttonEl.addEventListener("click", function () {
+          calculator.variable();
+        });
+        break;
+      case "square":
+      case "invert":
         buttonEl.addEventListener("click", function () {
           calculator.btnPres(button.rawText, button.type, true, true);
-      })
-    } else {
-      if (["add", "sto", "exp", "multiply"].includes(button.type)) {
+        });
+        break;
+
+      case "add":
+      case "sto":
+      case "exp":
+      case "multiply":
         buttonEl.addEventListener("click", function () {
           calculator.btnPres(button.rawText, button.type, true);
         });
-      } else {
+        break;
+      default:
         buttonEl.addEventListener("click", function () {
           calculator.btnPres(button.rawText, button.type);
         });
-      }
+        break;
     }
     buttonRowDiv.appendChild(buttonEl);
   });
@@ -85,7 +99,7 @@ const setupFinalRow = function (fourthFunctionRow, fifthFunctionRow) {
 const setupButtons = function () {
   const buttonBox = document.querySelector(".buttonbox");
   const numRowFunctions = ["store-var", "variable", "square"];
-  const numRowTypes = ["sto", "variable", "square"]
+  const numRowTypes = ["sto", "variable", "square"];
   const numRowFunctionSymbols = [
     "sto \u2192",
     "<span class='var-button-1'>x</span><span class='var-button-2'><div>yzt</div><div>abc</div></span>",
@@ -106,26 +120,36 @@ const setupButtons = function () {
     symbols["divide"],
     symbols["multiply"],
   ];
-  const primaryOperatorType = [
-    "special",
-    "add",
-    "add",
-    "multiply",
-    "multiply"
-  ]
+  const primaryOperatorType = ["special", "add", "add", "multiply", "multiply"];
   let currentRow = [];
   for (let i = 0; i < 10; i++) {
     if (i === 0) {
-      currentRow.push({ labelText: "on",type: "special", classes: ["on-btn", "butn-on"] });
-      currentRow.push({ labelText: `${i}`,type: "number", classes: ["num-btn", `butn-${i}`] });
-      currentRow.push({ labelText: ".", type: "number", classes: ["num-btn", "butn-dot"] });
+      currentRow.push({
+        labelText: "on",
+        type: "special",
+        classes: ["on-btn", "butn-on"],
+      });
+      currentRow.push({
+        labelText: `${i}`,
+        type: "number",
+        classes: ["num-btn", `butn-${i}`],
+      });
+      currentRow.push({
+        labelText: ".",
+        type: "number",
+        classes: ["num-btn", "butn-dot"],
+      });
       currentRow.push({
         labelText: "( \u2011 )",
         type: "negate",
         rawText: "\u2011",
         classes: ["num-btn", "butn-negate"],
       });
-      currentRow.push({ labelText: "enter", classes: ["enter-btn"] });
+      currentRow.push({
+        labelText: "enter",
+        type: "enter",
+        classes: ["enter-btn"],
+      });
     }
     if ((i + 2) % 3 == 0) {
       const numRowFunction = numRowFunctions[(i + 2) / 3 - 1];
@@ -149,7 +173,11 @@ const setupButtons = function () {
       }
     }
     if (i !== 0)
-      currentRow.push({ labelText: `${i}`,type: "number", classes: ["num-btn", `butn-${i}`] });
+      currentRow.push({
+        labelText: `${i}`,
+        type: "number",
+        classes: ["num-btn", `butn-${i}`],
+      });
     if (i % 3 == 0) {
       if (i != 0) {
         const operatorButton = primaryOperations[i / 3 - 1];
@@ -254,7 +282,7 @@ const setupButtons = function () {
   });
   thirdFunctionRow.push({
     labelText: "clear",
-    type: "special",
+    type: "clear",
     classes: ["special-btn", "clear-btn"],
   });
   const thirdRowDif = setupButtonRow(thirdFunctionRow);

@@ -44,47 +44,48 @@ const calculator = {
       }
     }
     if (enclose) {
-      let firstEncounter = this.state.type[this.state.type.length - 1];
-      let bracketCounter = 0;
-      if (firstEncounter === "close-bracket") {
-        bracketCounter++;
-      }
-      let i = 0;
-      console.log(this.state.type)
-      for (i = this.state.type.length - 2; i > 0; i--) {
-        currentEncounter = this.state.type[i]; // TODO implement the recursive loop
-        if (currentEncounter === "number" && firstEncounter === "number") {
-          continue;
-        } else if (firstEncounter === "close-bracket") {
-          if (currentEncounter === "close-bracket") {
-            bracketCounter++;
-            continue;
-          }
-          if (currentEncounter === "open-bracket") {
-            bracketCounter--;
-            continue;
-          }
-          if (bracketCounter === 0) {
-            console.log(i)
-            if (currentEncounter === "func") {
-              i--;
-              break;
-            }
-            if (currentEncounter === "exp" || currentEncounter === "number") {
-              continue;
-            }
-            else break;
-          }
-        } else {
-          break;
-        }
-      }
-      if (firstEncounter !== "number") {
-        this.state.val.push(")");
-        this.state.type.push("close-bracket");
-        this.state.val.splice(i + 1, 0, "(");
-        this.state.type.splice(i + 1, 0, "open-bracket");
-      }
+      this.encloser();
+      // let firstEncounter = this.state.type[this.state.type.length - 1];
+      // let bracketCounter = 0;
+      // if (firstEncounter === "close-bracket") {
+      //   bracketCounter++;
+      // }
+      // let i = 0;
+      // console.log(this.state.type)
+      // for (i = this.state.type.length - 2; i > 0; i--) {
+      //   currentEncounter = this.state.type[i]; // TODO implement the recursive loop
+      //   if (currentEncounter === "number" && firstEncounter === "number") {
+      //     continue;
+      //   } else if (firstEncounter === "close-bracket") {
+      //     if (currentEncounter === "close-bracket") {
+      //       bracketCounter++;
+      //       continue;
+      //     }
+      //     if (currentEncounter === "open-bracket") {
+      //       bracketCounter--;
+      //       continue;
+      //     }
+      //     if (bracketCounter === 0) {
+      //       console.log(i)
+      //       if (currentEncounter === "func") {
+      //         i--;
+      //         break;
+      //       }
+      //       if (currentEncounter === "exp" || currentEncounter === "number") {
+      //         continue;
+      //       }
+      //       else break;
+      //     }
+      //   } else {
+      //     break;
+      //   }
+      // }
+      // if (firstEncounter !== "number") {
+      //   this.state.val.push(")");
+      //   this.state.type.push("close-bracket");
+      //   this.state.val.splice(i + 1, 0, "(");
+      //   this.state.type.splice(i + 1, 0, "open-bracket");
+      // }
     }
 
     console.log(type);
@@ -188,6 +189,44 @@ const calculator = {
 
     this.updateDisplay(this.state);
   },
+  encloser: function () {
+    if (this.state.type[this.state.type.length - 1] === "close-bracket") {
+      let bracketCounter = 0;
+      let bracketComplete = false;
+      let containsExponent = false;
+      for (var i = this.state.type.length - 1; i >= 1; i--) {
+        if (this.state.type[i] === "exp") containsExponent = true;
+        if (this.state.type[i] === "close-bracket") {
+          bracketCounter++;
+          bracketComplete = false;
+        }
+        if (!bracketComplete) {
+          if (this.state.type[i] === "open-bracket") {
+            bracketCounter--;
+            if (bracketCounter === 0) {
+              bracketComplete = true;
+            }
+          }
+        } else {
+          if (["add", "multiply", "open-bracket"].includes(this.state.type[i])) {
+            if (this.state.type[i + 1] !== "open-bracket" || containsExponent) {
+              this.state.val.splice(i + 1, 0, "(");
+              this.state.type.splice(i + 1, 0, "open-bracket");
+              this.state.val.push(")");
+              this.state.type.push("close-bracket");
+            }
+            return;
+          }
+        }
+      }
+      if (this.state.type[i] !== "open-bracket" || containsExponent) {
+        this.state.val.splice(i, 0, "(");
+        this.state.type.splice(i, 0, "open-bracket");
+        this.state.val.push(")");
+        this.state.type.push("close-bracket");
+      }
+    } 
+  },
   variable: function () {
     let previous = this.state.val[this.state.val.length - 1];
     if (!previous) {
@@ -253,8 +292,8 @@ const calculator = {
     // }
   },
   updateDisplay: function () {
-    console.log(this.state.val)
-    let parsed = Array.from(this.state.val)
+    console.log(this.state.val);
+    let parsed = Array.from(this.state.val);
     let openBracketCounter = 0;
     let exponentiating = false;
     let exponentCounter = 0;
@@ -263,15 +302,15 @@ const calculator = {
         openBracketCounter++;
         if (exponentiating) {
           parsed[i] = "<sup>";
-          exponentCounter ++;
+          exponentCounter++;
         }
         lastIncrement = i;
       }
-      console.log(exponentCounter, exponentiating, i)
+      console.log(exponentCounter, exponentiating, i);
       if (parsed[i] === ")") {
         if (exponentiating) {
           parsed[i] = "</sup>";
-          exponentCounter --
+          exponentCounter--;
         }
         if (exponentCounter === 0) exponentiating = false;
         openBracketCounter--;
@@ -283,10 +322,10 @@ const calculator = {
       }
       if (parsed[i] === "^") {
         exponentiating = true;
-        parsed[i] = ""
+        parsed[i] = "";
       }
     }
-    console.log(parsed, this.state.val)
+    console.log(parsed, this.state.val);
     this.lineInput.innerHTML = parsed.join("");
   },
   //   console.log(parsed)
@@ -356,7 +395,9 @@ const calculator = {
     return Math.tan(a);
   },
   ln: function (a) {
-    if (this.options["angle"] === "deg") a = (a * Math.PI) / 180;
-    return Math.log(a)
+    return Math.log(a);
+  },
+  log: function (a) {
+    return Math.log10(a);
   },
 };

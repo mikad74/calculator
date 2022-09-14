@@ -17,6 +17,7 @@ const symbols = {
   cos: "cos",
   tan: "tan",
   ln: "ln",
+  log: "log",
 
   regEx: function (property) {
     let re = new RegExp("\\" + this[property]);
