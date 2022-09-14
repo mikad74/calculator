@@ -70,18 +70,22 @@ const setupFinalRow = function (fourthFunctionRow, fifthFunctionRow) {
   const upButton = document.createElement("button");
   upButton.innerText = "\u25b2";
   upButton.classList.add("dpad-button");
+  upButton.addEventListener("click", () => calculator.up())
   dpadUp.appendChild(upButton);
   const leftButton = document.createElement("button");
   leftButton.classList.add("dpad-button");
   leftButton.innerText = "\u25c0";
+  leftButton.addEventListener("click", () => calculator.left())
   const rightButton = document.createElement("button");
   rightButton.classList.add("dpad-button");
   rightButton.innerText = "\u25b6";
+  rightButton.addEventListener("click", () => calculator.right())
   dpadLeftRight.appendChild(leftButton);
   dpadLeftRight.appendChild(rightButton);
   const downButton = document.createElement("button");
   downButton.classList.add("dpad-button");
   downButton.innerText = "\u25bc";
+  downButton.addEventListener("click", () => calculator.down())
   dpadDown.appendChild(downButton);
   dpadUp.appendChild(upButton);
   dpadUp.classList.add("dpad-up");
@@ -200,7 +204,7 @@ const setupButtons = function () {
     labelText: "^",
     type: "exp",
     classes: ["operator-btn", "exponentiate-btn"],
-    rawText: `^(`,
+    rawText: "^(",
   });
   firstFunctionRow.push({
     labelText: "x<sup>-1</sup>",
@@ -271,8 +275,9 @@ const setupButtons = function () {
     classes: ["layout-btn", "frac-btn"],
   });
   thirdFunctionRow.push({
-    labelText: "E",
-    type: "operator",
+    labelText: "*10<sup>n</sup>",
+    rawText: "*10^(",
+    type: "standard-form",
     classes: ["operator-btn", "e-btn"],
   });
   thirdFunctionRow.push({

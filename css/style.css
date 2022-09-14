@@ -61,12 +61,36 @@ body {
   font-weight: 600;
 }
 
+.cursor {
+  animation: blinker .9s step-start infinite;
+}
+
+@keyframes blinker {
+  50% {
+    color: black;
+    background-color: lightgrey;
+  }
+  100% {
+    color: lightgrey;
+    background-color: black;
+  }
+}
+
+.cursor-lead {
+  animation: blinker-lead .9s step-start infinite;
+}
+
+@keyframes blinker-lead {
+  50% {
+    opacity: 0;
+  }
+}
+
 .padding {
   min-width: 14pt;
   flex: 1;
   border: 2px solid green;
 }
-
 
 .input {
   border: 2px solid black;
@@ -79,7 +103,6 @@ body {
 .output.overflow {
   width: 100%;
   text-align: right;
-  
 }
 
 .buttonbox {
@@ -94,9 +117,8 @@ body {
 .buttonRow {
   display: flex;
   justify-content: space-around;
-  height:10%;
+  height: 10%;
 }
-
 
 .buttonbox button {
   font-size: 12pt;
@@ -178,7 +200,6 @@ body {
   width: 40%;
   height: 80%;
 }
-
 
 .dpad-left-right button {
   width: 80%;
