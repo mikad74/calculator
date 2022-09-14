@@ -355,5 +355,8 @@ const calculator = {
     if (this.options["angle"] === "deg") a = (a * Math.PI) / 180;
     return Math.tan(a);
   },
-  ln: function (a) {},
+  ln: function (a) {
+    if (this.options["angle"] === "deg") a = (a * Math.PI) / 180;
+    return Math.log(a)
+  },
 };

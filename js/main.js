@@ -233,7 +233,7 @@ const setupButtons = function () {
   let thirdFunctionRow = [];
   thirdFunctionRow.push({
     labelText: "ln",
-    rawText: "ln(",
+    rawText: "ln",
     type: "func",
     classes: ["func-btn", "ln-btn"],
   });
