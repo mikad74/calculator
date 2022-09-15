@@ -23,6 +23,7 @@ const calculator = {
   },
   options: {
     angle: "rad",
+    insert: false,
   },
 
   variableIterator: 0,
@@ -38,15 +39,26 @@ const calculator = {
     this.displayBuffer.appendChild(this.currentLine);
     this.updateDisplay();
   },
-  updateState: function(val, type) {
-    if (this.cursor >= this.state.val.length) {
-      this.state.val.push(val)
-      this.state.type.push(type)
+  updateState: function (val, type) {
+    if (this.insert) {
+      if (this.cursor >= this.state.val.length) {
+        this.state.val.push(val);
+        this.state.type.push(type);
+      } else {
+        this.state.val.splice(this.cursor, 0, val);
+        this.state.type.splice(this.cursor, 0, type);
+      }
     }
     else {
-      this.state.val.splice(this.cursor, 0, val)
-      this.state.type.splice(this.cursor, 0, type)
+      if (this.cursor >= this.state.val.length) {
+        this.state.val.push(val);
+        this.state.type.push(type);
+      } else {
+        this.state.val.splice(this.cursor, 1, val);
+        this.state.type.splice(this.cursor, 1, type);
+      }
     }
+    this.cursor++;
   },
   btnPres: function (raw, type, operator = false, enclose = false) {
     this.currentLine = document.querySelector(".line.current");
@@ -143,7 +155,6 @@ const calculator = {
         break;
     }
 
-    this.cursor ++
     this.updateDisplay();
   },
   encloser: function () {
@@ -171,6 +182,7 @@ const calculator = {
             if (this.state.type[i + 1] !== "open-bracket" || containsExponent) {
               this.state.val.splice(i + 1, 0, "(");
               this.state.type.splice(i + 1, 0, "open-bracket");
+              this.cursor++;
               this.updateState(")", "close-bracket");
             }
             return;
@@ -180,6 +192,7 @@ const calculator = {
       if (this.state.type[i] !== "open-bracket" || containsExponent) {
         this.state.val.splice(i, 0, "(");
         this.state.type.splice(i, 0, "open-bracket");
+        this.cursor++;
         this.updateState(")", "close-bracket");
       }
     }
@@ -188,7 +201,10 @@ const calculator = {
     let previous = this.state.val[this.state.val.length - 1];
     if (!previous) {
       this.variableIterator = 0;
-      this.updateState(Object.keys(this.variables)[this.variableIterator], "var");
+      this.updateState(
+        Object.keys(this.variables)[this.variableIterator],
+        "var"
+      );
       this.updateDisplay();
     } else if (previous in this.variables) {
       this.variableIterator =
@@ -206,14 +222,17 @@ const calculator = {
       ) {
         this.updateState("*", "multiply");
       }
-      this.updateState(Object.keys(this.variables)[this.variableIterator], "var");
+      this.updateState(
+        Object.keys(this.variables)[this.variableIterator],
+        "var"
+      );
       this.updateDisplay();
     }
   },
   solve: function () {
     try {
       const inputWidth = document.querySelector(".current .input").offsetWidth;
-      this.updateDisplay(true)
+      this.updateDisplay(true);
 
       this.currentLine.classList.remove("current");
       const lineOutput = document.createElement("div");
@@ -251,15 +270,14 @@ const calculator = {
       console.log(err);
     }
   },
-  delete: function() {
+  delete: function () {
     if (this.cursor >= this.state.val.length) {
       this.state.val.pop();
       this.state.type.pop();
       this.updateDisplay();
-    }
-    else {
-      this.state.val.splice(this.cursor, 1)
-      this.state.type.splice(this.cursor, 1)
+    } else {
+      this.state.val.splice(this.cursor, 1);
+      this.state.type.splice(this.cursor, 1);
       this.updateDisplay();
     }
   },
@@ -283,7 +301,7 @@ const calculator = {
     let parsed = Array.from(this.state.val);
     let exponentiating = false;
     let exponentCounter = 0;
-    console.log(noCursor)
+    console.log(noCursor);
     for (let i = 0; i < parsed.length; i++) {
       if (i === this.cursor && noCursor === false) {
         parsed[i] = `<span class='cursor'>${parsed[i]}</span>`;
@@ -312,7 +330,8 @@ const calculator = {
       parsed.push("<span class='cursor-lead'>|</span>");
     }
     console.log(parsed, this.state.val);
-    this.lineInput.innerHTML = parsed.join("") + "";
+    fractest = "<span class='frac'><span class='inside'>1</span><span class='inside symbol'>/</span><span class='inside bottom'>2</span></span>"
+    this.lineInput.innerHTML = parsed.join("") + fractest;
   },
   left: function () {
     console.log(this.cursor);
@@ -322,7 +341,7 @@ const calculator = {
     }
   },
   right: function () {
-    console.log(this.cursor, this.state.val.length)
+    console.log(this.cursor, this.state.val.length);
     if (this.cursor <= this.state.val.length - 1) {
       this.cursor++;
       this.updateDisplay();

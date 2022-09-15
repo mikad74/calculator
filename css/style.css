@@ -86,6 +86,27 @@ body {
   }
 }
 
+.frac {
+  display:inline-block;
+  position: relative;
+  vertical-align: middle;
+  letter-spacing: .001em;
+  text-align: center;
+}
+
+.frac .inside {
+  display: block;
+  padding: .1em;
+}
+
+.frac .bottom {
+  border-top: thin solid black;
+}
+
+.frac .symbol {
+  display:none;
+}
+
 .padding {
   min-width: 14pt;
   flex: 1;
