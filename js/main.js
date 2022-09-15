@@ -21,6 +21,11 @@ const setupButtonRow = function (buttons) {
           calculator.clear();
         });
         break;
+      case "delete":
+        buttonEl.addEventListener("click", function () {
+          calculator.delete();
+        });
+        break;
       case "variable":
         buttonEl.addEventListener("click", function () {
           calculator.variable();
@@ -70,22 +75,22 @@ const setupFinalRow = function (fourthFunctionRow, fifthFunctionRow) {
   const upButton = document.createElement("button");
   upButton.innerText = "\u25b2";
   upButton.classList.add("dpad-button");
-  upButton.addEventListener("click", () => calculator.up())
+  upButton.addEventListener("click", () => calculator.up());
   dpadUp.appendChild(upButton);
   const leftButton = document.createElement("button");
   leftButton.classList.add("dpad-button");
   leftButton.innerText = "\u25c0";
-  leftButton.addEventListener("click", () => calculator.left())
+  leftButton.addEventListener("click", () => calculator.left());
   const rightButton = document.createElement("button");
   rightButton.classList.add("dpad-button");
   rightButton.innerText = "\u25b6";
-  rightButton.addEventListener("click", () => calculator.right())
+  rightButton.addEventListener("click", () => calculator.right());
   dpadLeftRight.appendChild(leftButton);
   dpadLeftRight.appendChild(rightButton);
   const downButton = document.createElement("button");
   downButton.classList.add("dpad-button");
   downButton.innerText = "\u25bc";
-  downButton.addEventListener("click", () => calculator.down())
+  downButton.addEventListener("click", () => calculator.down());
   dpadDown.appendChild(downButton);
   dpadUp.appendChild(upButton);
   dpadUp.classList.add("dpad-up");
@@ -306,7 +311,7 @@ const setupButtons = function () {
   });
   fourthFunctionRow.push({
     labelText: "delete",
-    type: "special",
+    type: "delete",
     classes: ["special-btn", "delet-btn"],
   });
   let fifthFunctionRow = [];

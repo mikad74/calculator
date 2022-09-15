@@ -38,57 +38,25 @@ const calculator = {
     this.displayBuffer.appendChild(this.currentLine);
     this.updateDisplay();
   },
+  updateState: function(val, type) {
+    if (this.cursor >= this.state.val.length) {
+      this.state.val.push(val)
+      this.state.type.push(type)
+    }
+    else {
+      this.state.val.splice(this.cursor, 0, val)
+      this.state.type.splice(this.cursor, 0, type)
+    }
+  },
   btnPres: function (raw, type, operator = false, enclose = false) {
     this.currentLine = document.querySelector(".line.current");
     if (operator) {
       if (this.state.val.length === 0) {
-        this.state.val.push("Ans");
-        this.state.type.push("number");
+        this.updateState("Ans", "number");
       }
     }
     if (enclose) {
       this.encloser();
-      // let firstEncounter = this.state.type[this.state.type.length - 1];
-      // let bracketCounter = 0;
-      // if (firstEncounter === "close-bracket") {
-      //   bracketCounter++;
-      // }
-      // let i = 0;
-      // console.log(this.state.type)
-      // for (i = this.state.type.length - 2; i > 0; i--) {
-      //   currentEncounter = this.state.type[i]; // TODO implement the recursive loop
-      //   if (currentEncounter === "number" && firstEncounter === "number") {
-      //     continue;
-      //   } else if (firstEncounter === "close-bracket") {
-      //     if (currentEncounter === "close-bracket") {
-      //       bracketCounter++;
-      //       continue;
-      //     }
-      //     if (currentEncounter === "open-bracket") {
-      //       bracketCounter--;
-      //       continue;
-      //     }
-      //     if (bracketCounter === 0) {
-      //       console.log(i)
-      //       if (currentEncounter === "func") {
-      //         i--;
-      //         break;
-      //       }
-      //       if (currentEncounter === "exp" || currentEncounter === "number") {
-      //         continue;
-      //       }
-      //       else break;
-      //     }
-      //   } else {
-      //     break;
-      //   }
-      // }
-      // if (firstEncounter !== "number") {
-      //   this.state.val.push(")");
-      //   this.state.type.push("close-bracket");
-      //   this.state.val.splice(i + 1, 0, "(");
-      //   this.state.type.splice(i + 1, 0, "open-bracket");
-      // }
     }
 
     console.log(type);
@@ -99,11 +67,9 @@ const calculator = {
             this.state.type[this.state.type.length - 1]
           )
         ) {
-          this.state.val.push("*");
-          this.state.type.push("multiply");
+          this.updateState("*", "multiply");
         }
-        this.state.val.push(raw);
-        this.state.type.push(type);
+        this.updateState(raw, type);
         break;
 
       case "func":
@@ -112,50 +78,33 @@ const calculator = {
             this.state.type[this.state.type.length - 1]
           )
         ) {
-          this.state.val.push("*");
-          this.state.type.push("multiply");
+          this.updateState("*", "multiply");
         }
-        this.state.val.push(raw);
-        this.state.type.push(type);
-        this.state.val.push("(");
-        this.state.type.push("open-bracket");
+        this.updateState(raw, type);
+        this.updateState("(", "open-bracket");
         break;
 
       case "square": // TODO: Recursion
-        this.state.val.push("^");
-        this.state.type.push("exp");
-        this.state.val.push("(");
-        this.state.type.push("open-bracket");
-        this.state.val.push("2");
-        this.state.type.push("number");
-        this.state.val.push(")");
-        this.state.type.push("close-bracket");
+        this.updateState("^", "exp");
+        this.updateState("(", "open-bracket");
+        this.updateState("2", "number");
+        this.updateState(")", "close-bracket");
         break;
       case "invert": // TODO: Recursion
-        this.state.val.push("^");
-        this.state.type.push("exp");
-        this.state.val.push("(");
-        this.state.type.push("open-bracket");
-        this.state.val.push("-1");
-        this.state.type.push("number");
-        this.state.val.push(")");
-        this.state.type.push("close-bracket");
+        this.updateState("^", "exp");
+        this.updateState("(", "open-bracket");
+        this.updateState("-1", "number");
+        this.updateState(")", "close-bracket");
         break;
       case "exp":
-        this.state.val.push("^");
-        this.state.type.push("exp");
-        this.state.val.push("(");
-        this.state.type.push("open-bracket");
+        this.updateState("^", "exp");
+        this.updateState("(", "open-bracket");
         break;
       case "standard-form":
-        this.state.val.push("*");
-        this.state.type.push("multiply");
-        this.state.val.push("10");
-        this.state.type.push("number");
-        this.state.val.push("^");
-        this.state.type.push("exp");
-        this.state.val.push("(");
-        this.state.type.push("open-bracket");
+        this.updateState("*", "multiply");
+        this.updateState("10", "number");
+        this.updateState("^", "exp");
+        this.updateState("(", "open-bracket");
         break;
 
       case "open-bracket":
@@ -164,11 +113,9 @@ const calculator = {
             this.state.type[this.state.type.length - 1]
           )
         ) {
-          this.state.val.push("*");
-          this.state.type.push("multiply");
+          this.updateState("*", "multiply");
         }
-        this.state.val.push(raw);
-        this.state.type.push(type);
+        this.updateState(raw, type);
         break;
       case "const":
         if (
@@ -176,11 +123,9 @@ const calculator = {
             this.state.type[this.state.type.length - 1]
           )
         ) {
-          this.state.val.push("*");
-          this.state.type.push("multiply");
+          this.updateState("*", "multiply");
         }
-        this.state.val.push(raw);
-        this.state.type.push(type);
+        this.updateState(raw, type);
         break;
       case "number":
         if (
@@ -188,20 +133,18 @@ const calculator = {
             this.state.type[this.state.type.length - 1]
           )
         ) {
-          this.state.val.push("*");
-          this.state.type.push("multiply");
+          this.updateState("*", "multiply");
         }
-        this.state.val.push(raw);
-        this.state.type.push(type);
+        this.updateState(raw, type);
         break;
 
       default:
-        this.state.val.push(raw);
-        this.state.type.push(type);
+        this.updateState(raw, type);
         break;
     }
 
-    this.updateDisplay(this.state);
+    this.cursor ++
+    this.updateDisplay();
   },
   encloser: function () {
     if (this.state.type[this.state.type.length - 1] === "close-bracket") {
@@ -228,8 +171,7 @@ const calculator = {
             if (this.state.type[i + 1] !== "open-bracket" || containsExponent) {
               this.state.val.splice(i + 1, 0, "(");
               this.state.type.splice(i + 1, 0, "open-bracket");
-              this.state.val.push(")");
-              this.state.type.push("close-bracket");
+              this.updateState(")", "close-bracket");
             }
             return;
           }
@@ -238,8 +180,7 @@ const calculator = {
       if (this.state.type[i] !== "open-bracket" || containsExponent) {
         this.state.val.splice(i, 0, "(");
         this.state.type.splice(i, 0, "open-bracket");
-        this.state.val.push(")");
-        this.state.type.push("close-bracket");
+        this.updateState(")", "close-bracket");
       }
     }
   },
@@ -247,8 +188,7 @@ const calculator = {
     let previous = this.state.val[this.state.val.length - 1];
     if (!previous) {
       this.variableIterator = 0;
-      this.state.val.push(Object.keys(this.variables)[this.variableIterator]);
-      this.state.type.push("var");
+      this.updateState(Object.keys(this.variables)[this.variableIterator], "var");
       this.updateDisplay();
     } else if (previous in this.variables) {
       this.variableIterator =
@@ -264,17 +204,17 @@ const calculator = {
           this.state.type[this.state.type.length - 1]
         )
       ) {
-        this.state.val.push("*");
-        this.state.type.push("multiply");
+        this.updateState("*", "multiply");
       }
-      this.state.val.push(Object.keys(this.variables)[this.variableIterator]);
-      this.state.type.push("var");
+      this.updateState(Object.keys(this.variables)[this.variableIterator], "var");
       this.updateDisplay();
     }
   },
   solve: function () {
     try {
       const inputWidth = document.querySelector(".current .input").offsetWidth;
+      this.updateDisplay(true)
+
       this.currentLine.classList.remove("current");
       const lineOutput = document.createElement("div");
       lineOutput.classList.add("output");
@@ -302,13 +242,25 @@ const calculator = {
       this.lineInput.innerHTML = "";
       this.currentLine.appendChild(this.lineInput);
       this.displayBuffer.appendChild(this.currentLine);
+      this.state = { val: [], type: [] };
       this.updateDisplay();
-      this.state = { val: [" "], type: ["null"] };
     } catch (err) {
       this.saveState = this.displayBuffer.innerHTML;
       this.displayBuffer.innerHTML = `<div class='error'>${err}</div>`;
       this.isError = true;
       console.log(err);
+    }
+  },
+  delete: function() {
+    if (this.cursor >= this.state.val.length) {
+      this.state.val.pop();
+      this.state.type.pop();
+      this.updateDisplay();
+    }
+    else {
+      this.state.val.splice(this.cursor, 1)
+      this.state.type.splice(this.cursor, 1)
+      this.updateDisplay();
     }
   },
   clear: function () {
@@ -320,19 +272,20 @@ const calculator = {
       this.isError = false;
     } else if (this.lineInput.innerHTML.length !== 0) {
       this.lineInput.innerHTML = "";
-      this.state = { val: [" "], type: ["null"] };
+      this.state = { val: [], type: [] };
     } else {
       this.displayBuffer.innerHTML = "";
       this.updateDisplay();
       this.displayBuffer.appendChild(this.currentLine);
     }
   },
-  updateDisplay: function () {
+  updateDisplay: function (noCursor = false) {
     let parsed = Array.from(this.state.val);
     let exponentiating = false;
     let exponentCounter = 0;
+    console.log(noCursor)
     for (let i = 0; i < parsed.length; i++) {
-      if (i === this.cursor) {
+      if (i === this.cursor && noCursor === false) {
         parsed[i] = `<span class='cursor'>${parsed[i]}</span>`;
       }
       if (parsed[i] === "(") {
@@ -355,7 +308,7 @@ const calculator = {
         parsed[i] = "";
       }
     }
-    if (this.cursor > parsed.length - 1) {
+    if (this.cursor > parsed.length - 1 && noCursor === false) {
       parsed.push("<span class='cursor-lead'>|</span>");
     }
     console.log(parsed, this.state.val);
