@@ -8,6 +8,7 @@ const calculator = {
   isError: false,
   state: { val: [], type: [] },
   cursor: 0,
+  inFrac: 0,
   history: [{ in: 0, out: 0 }],
   variables: {
     x: 0,
@@ -40,7 +41,8 @@ const calculator = {
     this.updateDisplay();
   },
   updateState: function (val, type) {
-    if (this.insert) {
+    if (this.options.insert || this.state.type[this.cursor] === "placeholder") {
+      this.state.val[this.cursor] = " ";
       if (this.cursor >= this.state.val.length) {
         this.state.val.push(val);
         this.state.type.push(type);
@@ -48,8 +50,7 @@ const calculator = {
         this.state.val.splice(this.cursor, 0, val);
         this.state.type.splice(this.cursor, 0, type);
       }
-    }
-    else {
+    } else {
       if (this.cursor >= this.state.val.length) {
         this.state.val.push(val);
         this.state.type.push(type);
@@ -58,7 +59,13 @@ const calculator = {
         this.state.type.splice(this.cursor, 1, type);
       }
     }
-    this.cursor++;
+    this.updateCursor(1);
+  },
+  updateCursor: function (val) {
+    this.cursor += val;
+    if (this.state.type[this.cursor] === "frac") {
+      this.cursor += val / Math.abs(val);
+    }
   },
   btnPres: function (raw, type, operator = false, enclose = false) {
     this.currentLine = document.querySelector(".line.current");
@@ -74,24 +81,10 @@ const calculator = {
     console.log(type);
     switch (type) {
       case "negate":
-        if (
-          ["number", "func", "close-bracket", "const", "var"].includes(
-            this.state.type[this.state.type.length - 1]
-          )
-        ) {
-          this.updateState("*", "multiply");
-        }
         this.updateState(raw, type);
         break;
 
       case "func":
-        if (
-          ["number", "close-bracket", "const", "var"].includes(
-            this.state.type[this.state.type.length - 1]
-          )
-        ) {
-          this.updateState("*", "multiply");
-        }
         this.updateState(raw, type);
         this.updateState("(", "open-bracket");
         break;
@@ -102,52 +95,27 @@ const calculator = {
         this.updateState("2", "number");
         this.updateState(")", "close-bracket");
         break;
+
       case "invert": // TODO: Recursion
         this.updateState("^", "exp");
         this.updateState("(", "open-bracket");
         this.updateState("-1", "number");
         this.updateState(")", "close-bracket");
         break;
+
       case "exp":
         this.updateState("^", "exp");
         this.updateState("(", "open-bracket");
+        this.updateState("\u25A1", "placeholder");
+        this.updateState(")", "close-bracket");
+        this.updateCursor(-2);
         break;
+
       case "standard-form":
         this.updateState("*", "multiply");
         this.updateState("10", "number");
         this.updateState("^", "exp");
         this.updateState("(", "open-bracket");
-        break;
-
-      case "open-bracket":
-        if (
-          ["number", "close-bracket", "const", "var"].includes(
-            this.state.type[this.state.type.length - 1]
-          )
-        ) {
-          this.updateState("*", "multiply");
-        }
-        this.updateState(raw, type);
-        break;
-      case "const":
-        if (
-          ["number", "close-bracket", "const", "var"].includes(
-            this.state.type[this.state.type.length - 1]
-          )
-        ) {
-          this.updateState("*", "multiply");
-        }
-        this.updateState(raw, type);
-        break;
-      case "number":
-        if (
-          ["close-bracket", "const", "var"].includes(
-            this.state.type[this.state.type.length - 1]
-          )
-        ) {
-          this.updateState("*", "multiply");
-        }
-        this.updateState(raw, type);
         break;
 
       default:
@@ -182,7 +150,7 @@ const calculator = {
             if (this.state.type[i + 1] !== "open-bracket" || containsExponent) {
               this.state.val.splice(i + 1, 0, "(");
               this.state.type.splice(i + 1, 0, "open-bracket");
-              this.cursor++;
+              this.updateCursor(1);
               this.updateState(")", "close-bracket");
             }
             return;
@@ -192,7 +160,7 @@ const calculator = {
       if (this.state.type[i] !== "open-bracket" || containsExponent) {
         this.state.val.splice(i, 0, "(");
         this.state.type.splice(i, 0, "open-bracket");
-        this.cursor++;
+        this.updateCursor(1);
         this.updateState(")", "close-bracket");
       }
     }
@@ -240,6 +208,7 @@ const calculator = {
       const parsedState = parser(this.state);
       console.log(parsedState);
       const result = solver(parsedState.val, parsedState.type);
+      console.log(result);
       lineOutput.innerHTML = result;
       this.currentLine.appendChild(lineOutput);
       // console.log(
@@ -262,6 +231,7 @@ const calculator = {
       this.currentLine.appendChild(this.lineInput);
       this.displayBuffer.appendChild(this.currentLine);
       this.state = { val: [], type: [] };
+      this.cursor = 0;
       this.updateDisplay();
     } catch (err) {
       this.saveState = this.displayBuffer.innerHTML;
@@ -303,9 +273,6 @@ const calculator = {
     let exponentCounter = 0;
     console.log(noCursor);
     for (let i = 0; i < parsed.length; i++) {
-      if (i === this.cursor && noCursor === false) {
-        parsed[i] = `<span class='cursor'>${parsed[i]}</span>`;
-      }
       if (parsed[i] === "(") {
         if (exponentiating) {
           parsed[i] = "<sup>";
@@ -325,25 +292,54 @@ const calculator = {
         exponentiating = true;
         parsed[i] = "";
       }
+      if (parsed[i] === "frac-top") {
+        parsed[i] = "<span class='frac'><span class='inside'>";
+      }
+      if (parsed[i] === "frac-bot") {
+        parsed[i] =
+          "</span><span class='inside symbol'>/</span><span class='inside bottom'>";
+      }
+      if (parsed[i] === "frac-end") {
+        parsed[i] = "</span></span>";
+      }
+      if (i === this.cursor && noCursor === false) {
+        if (this.state.type[i] === "placeholder") {
+          parsed[i] = `<span class='cursor'>\u232a</span>`;
+        } else {
+          parsed[i] = `<span class='cursor'>${parsed[i]}</span>`;
+        }
+      }
     }
+    console.log(parsed);
     if (this.cursor > parsed.length - 1 && noCursor === false) {
       parsed.push("<span class='cursor-lead'>|</span>");
     }
     console.log(parsed, this.state.val);
-    fractest = "<span class='frac'><span class='inside'>1</span><span class='inside symbol'>/</span><span class='inside bottom'>2</span></span>"
-    this.lineInput.innerHTML = parsed.join("") + fractest;
+    // fractest = "<span class='frac'><span class='inside'>1</span><span class='inside symbol'>/</span><span class='inside bottom'>2</span></span>"
+    this.lineInput.innerHTML = parsed.join("");
+  },
+  frac: function () {
+    this.updateState(" ", "placeholder");
+    this.updateState("frac-top", "frac");
+    this.updateState("\u25A1", "placeholder");
+    this.updateState("frac-bot", "frac");
+    this.updateState("\u25a1", "placeholder");
+    this.updateState("frac-end", "frac");
+    this.updateCursor(-3);
+    this.updateDisplay();
+    console.log("fraccing");
   },
   left: function () {
     console.log(this.cursor);
     if (this.cursor > 0) {
-      this.cursor--;
+      this.updateCursor(-1);
       this.updateDisplay();
     }
   },
   right: function () {
     console.log(this.cursor, this.state.val.length);
     if (this.cursor <= this.state.val.length - 1) {
-      this.cursor++;
+      this.updateCursor(1);
       this.updateDisplay();
     }
   },

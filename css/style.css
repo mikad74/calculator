@@ -92,15 +92,18 @@ body {
   vertical-align: middle;
   letter-spacing: .001em;
   text-align: center;
+  font-size: 9pt;
 }
 
 .frac .inside {
   display: block;
   padding: .1em;
+  min-width: 1ch;
 }
 
 .frac .bottom {
   border-top: thin solid black;
+  min-width: 1ch;
 }
 
 .frac .symbol {

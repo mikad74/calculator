@@ -26,6 +26,11 @@ const setupButtonRow = function (buttons) {
           calculator.delete();
         });
         break;
+      case "frac":
+        buttonEl.addEventListener("click", function () {
+          calculator.frac();
+        });
+        break;
       case "variable":
         buttonEl.addEventListener("click", function () {
           calculator.variable();
@@ -276,7 +281,7 @@ const setupButtons = function () {
   });
   thirdFunctionRow.push({
     labelText: "frac",
-    type: "special",
+    type: "frac",
     classes: ["layout-btn", "frac-btn"],
   });
   thirdFunctionRow.push({
