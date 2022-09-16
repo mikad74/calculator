@@ -4,9 +4,11 @@ const calculator = {
   displayBuffer: undefined,
   currentLine: undefined,
   lineInput: undefined,
+  functionLine: undefined,
   saveState: undefined,
   isError: false,
   state: { val: [], type: [] },
+  tableFunction: { val: [], type: [] },
   cursor: 0,
   inFrac: 0,
   history: [{ in: 0, out: 0 }],
@@ -19,8 +21,17 @@ const calculator = {
     b: 0,
     c: 0,
   },
+  tableVariables: {
+    x: 0,
+    a: 0,
+    b: 0,
+    c: 0,
+  },
   constants: {
     "\u03c0": Math.PI,
+  },
+  menu: {
+    table: false,
   },
   options: {
     angle: "rad",
@@ -167,37 +178,59 @@ const calculator = {
   },
   variable: function () {
     let previous = this.state.val[this.state.val.length - 1];
-    if (!previous) {
-      this.variableIterator = 0;
-      this.updateState(
-        Object.keys(this.variables)[this.variableIterator],
-        "var"
-      );
-      this.updateDisplay();
-    } else if (previous in this.variables) {
-      this.variableIterator =
-        (this.variableIterator + 1) % Object.keys(this.variables).length;
-      this.state.val[this.state.val.length - 1] = Object.keys(this.variables)[
-        this.variableIterator
-      ];
-      this.updateDisplay();
-    } else {
-      this.variableIterator = 0;
-      if (
-        ["number", "close-bracket", "const"].includes(
-          this.state.type[this.state.type.length - 1]
-        )
-      ) {
-        this.updateState("*", "multiply");
+    if (this.menu.table) {
+      if (!previous) {
+        this.variableIterator = 0;
+        this.updateState(
+          Object.keys(this.tableVariables)[this.variableIterator],
+          "var"
+        );
+        this.updateDisplay();
+      } else if (previous in this.variables) {
+        this.variableIterator =
+          (this.variableIterator + 1) % Object.keys(this.tableVariables).length;
+        this.state.val[this.state.val.length - 1] = Object.keys(
+          this.tableVariables
+        )[this.variableIterator];
+        this.updateDisplay();
+      } else {
+        this.variableIterator = 0;
+        this.updateState(
+          Object.keys(this.tableVariables)[this.variableIterator],
+          "var"
+        );
+        this.updateDisplay();
       }
-      this.updateState(
-        Object.keys(this.variables)[this.variableIterator],
-        "var"
-      );
-      this.updateDisplay();
+    } else {
+      if (!previous) {
+        this.variableIterator = 0;
+        this.updateState(
+          Object.keys(this.variables)[this.variableIterator],
+          "var"
+        );
+        this.updateDisplay();
+      } else if (previous in this.variables) {
+        this.variableIterator =
+          (this.variableIterator + 1) % Object.keys(this.variables).length;
+        this.state.val[this.state.val.length - 1] = Object.keys(this.variables)[
+          this.variableIterator
+        ];
+        this.updateDisplay();
+      } else {
+        this.variableIterator = 0;
+        this.updateState(
+          Object.keys(this.variables)[this.variableIterator],
+          "var"
+        );
+        this.updateDisplay();
+      }
     }
   },
   solve: function () {
+    if (this.menu.table) {
+      this.setupTableParameters();
+      return;
+    }
     try {
       const inputWidth = document.querySelector(".current .input").offsetWidth;
       this.updateDisplay(true);
@@ -316,6 +349,12 @@ const calculator = {
     }
     console.log(parsed, this.state.val);
     // fractest = "<span class='frac'><span class='inside'>1</span><span class='inside symbol'>/</span><span class='inside bottom'>2</span></span>"
+    if (this.menu.table) {
+      const currentLine = document.querySelector(".current")
+      console.log(currentLine)
+      this.functionLine.innerHTML = "y=" + parsed.join("");
+      return;
+    }
     this.lineInput.innerHTML = parsed.join("");
   },
   frac: function () {
@@ -328,6 +367,44 @@ const calculator = {
     this.updateCursor(-3);
     this.updateDisplay();
     console.log("fraccing");
+  },
+  setupTableFunction: function () {
+    this.menu.table = true;
+    this.saveState = this.state;
+    this.displayBuffer.innerHTML = "";
+    tableBox = document.createElement("div");
+    tableBox.classList.add("table");
+    this.functionLine = document.createElement("div");
+    this.functionLine.classList.add("line");
+    this.functionLine.classList.add("current");
+    tableBox.appendChild(this.functionLine);
+    this.displayBuffer.appendChild(tableBox);
+    this.updateDisplay();
+  },
+  setupTableParameters: function() {
+    this.tableFunction = this.state
+    this.state = { val: [], type: []}
+    this.displayBuffer.innerHTML = "";
+    tableBox = document.createElement("div");
+    tableBox.classList.add("table");
+    startLine = document.createElement('div')
+    startLine.classList.add("line", "current")
+    startLine.innerHTML = "Start="
+    stepLine = document.createElement('div')
+    stepLine.classList.add("line")
+    stepLine.innerHTML = "Step="
+    optionLine = document.createElement('div')
+    optionLine.classList.add("line", "tabs")
+    optionLine.innerHTML = "<span class='selected'>Auto</span><span>Ask-x</span>"
+    okLine = document.createElement('div')
+    okLine.classList.add("line", "ok")
+    okLine.innerHTML = "OK"
+    tableBox.appendChild(startLine);
+    tableBox.appendChild(stepLine);
+    tableBox.appendChild(optionLine);
+    tableBox.appendChild(okLine);
+    this.displayBuffer.appendChild(tableBox);
+    this.updateDisplay();
   },
   left: function () {
     console.log(this.cursor);

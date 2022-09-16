@@ -31,6 +31,11 @@ const setupButtonRow = function (buttons) {
           calculator.frac();
         });
         break;
+      case "table":
+        buttonEl.addEventListener("click", function () {
+          calculator.setupTableFunction();
+        });
+        break;
       case "variable":
         buttonEl.addEventListener("click", function () {
           calculator.variable();
@@ -292,7 +297,7 @@ const setupButtons = function () {
   });
   thirdFunctionRow.push({
     labelText: "table",
-    type: "special",
+    type: "table",
     classes: ["special-btn", "table-btn"],
   });
   thirdFunctionRow.push({

@@ -2,35 +2,49 @@ function isDigit(str) {
   return str.match(/[\d.]/) ? true : false;
 }
 
-function addImplicitMultiplication(type, output_arr) {
+function addImplicitMultiplication(type, prevType, output_arr) {
   switch (type) {
     case "negate":
-      if (["number", "func", "close-bracket", "const", "var"].includes(type)) {
-        this.output_arr.push("*");
-        this.output_arr.push("multiply");
+      if (
+        ["number", "func", "close-bracket", "const", "var"].includes(prevType)
+      ) {
+        output_arr.val.push("*");
+        output_arr.type.push("multiply");
       }
+      break;
 
     case "func":
-      if (["number", "close-bracket", "const", "var"].includes(type)) {
-        this.output_arr.push("*");
-        this.output_arr.push("multiply");
+      if (["number", "close-bracket", "const", "var"].includes(prevType)) {
+        output_arr.val.push("*");
+        output_arr.type.push("multiply");
       }
+      break;
     case "open-bracket":
-      if (["number", "close-bracket", "const", "var"].includes(type)) {
-        this.output_arr.push("*");
-        this.output_arr.push("multiply");
+      if (["number", "close-bracket", "const", "var"].includes(prevType)) {
+        output_arr.val.push("*");
+        output_arr.type.push("multiply");
       }
+      break;
     case "const":
-      if (["number", "close-bracket", "const", "var"].includes(type)) {
-        this.output_arr.push("*");
-        this.output_arr.push("multiply");
+      if (["number", "close-bracket", "const", "var"].includes(prevType)) {
+        output_arr.val.push("*");
+        output_arr.type.push("multiply");
       }
+      break;
     case "number":
-      if (["close-bracket", "const", "var"].includes(type)) {
-        this.output_arr.push("*");
-        this.output_arr.push("multiply");
+      if (["close-bracket", "const", "var"].includes(prevType)) {
+        output_arr.val.push("*");
+        output_arr.type.push("multiply");
       }
+      break;
+    case "var":
+      if (["number", "close-bracket", "const"].includes(prevType)) {
+        output_arr.val.push("*");
+        output_arr.type.push("multiply");
+      }
+      break;
   }
+  return output_arr;
 }
 
 function parser(obj) {
@@ -64,7 +78,11 @@ function parser(obj) {
       if (isDigit(el) && isDigit(output_arr.val[output_arr.val.length - 1]))
         output_arr.val[output_arr.val.length - 1] += el;
       else {
-        addImplicitMultiplication(obj[index], output_arr);
+        output_arr = addImplicitMultiplication(
+          obj.type[index],
+          obj.type[index - 1],
+          output_arr
+        );
         output_arr.val.push(el);
         output_arr.type.push(obj.type[index]);
       }

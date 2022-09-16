@@ -129,6 +129,12 @@ body {
   text-align: right;
 }
 
+.table {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .buttonbox {
   flex: 1;
   background-color: #687f58;
