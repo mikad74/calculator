@@ -61,8 +61,60 @@ body {
   font-weight: 600;
 }
 
+.table-setup .line {
+  justify-content: flex-start;
+}
+
+.selected {
+  color: lightgrey;
+  background-color: black;
+}
+
+.tabs {
+  display: block;
+}
+
+.tabs span {
+  margin-right: 15pt;
+}
+
+.ok{
+  display: box;
+  justify-content: flex-end;
+}
+
+.table {
+  flex: 0 0 auto;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: end;
+  font-size: 11pt;
+  font-weight: 600;
+}
+
+.header {
+  border-bottom: 2px solid black;
+}
+
+.table .iter {
+  border-right: 2px solid black;
+}
+
+.table span {
+  width: 49%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+.selection {
+  border-top: 2px solid black;
+}
+
 .cursor {
-  animation: blinker .9s step-start infinite;
+  animation: blinker 0.9s step-start infinite;
 }
 
 @keyframes blinker {
@@ -77,7 +129,7 @@ body {
 }
 
 .cursor-lead {
-  animation: blinker-lead .9s step-start infinite;
+  animation: blinker-lead 0.9s step-start infinite;
 }
 
 @keyframes blinker-lead {
@@ -87,17 +139,17 @@ body {
 }
 
 .frac {
-  display:inline-block;
+  display: inline-block;
   position: relative;
   vertical-align: middle;
-  letter-spacing: .001em;
+  letter-spacing: 0.001em;
   text-align: center;
   font-size: 9pt;
 }
 
 .frac .inside {
   display: block;
-  padding: .1em;
+  padding: 0.1em;
   min-width: 1ch;
 }
 
@@ -107,7 +159,7 @@ body {
 }
 
 .frac .symbol {
-  display:none;
+  display: none;
 }
 
 .padding {
@@ -129,7 +181,7 @@ body {
   text-align: right;
 }
 
-.table {
+.table-setup {
   display: flex;
   flex-direction: column;
   height: 100%;

@@ -13,7 +13,7 @@ const setupButtonRow = function (buttons) {
     switch (button.type) {
       case "enter":
         buttonEl.addEventListener("click", function () {
-          calculator.solve();
+          calculator.enter();
         });
         break;
       case "clear":
