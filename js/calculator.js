@@ -33,7 +33,7 @@ const calculator = {
     stepLine: undefined,
     selectedLine: 0,
     optionLine: undefined,
-    option: true,
+    option: true, // true for Auto false for Ask-x
     okLine: undefined,
   },
   constants: {
@@ -235,22 +235,23 @@ const calculator = {
     }
   },
   enter: function () {
+    // continue to next screen when in function page of table
     if (this.table.page === 1) {
       this.setupTableParameters();
       return;
     }
-    if (this.table.page === 2) {
+    // continue to next line in parameter setup table
+    else if (this.table.page === 2) {
       if (this.table.selectedLine === 0) {
-        this.tableStepParameter();
+        this.tableStartToStep();
         return;
-      }
-      if (this.table.selectedLine === 1) {
-        this.tableXparameter();
+      } else if (this.table.selectedLine === 1) {
+        this.tableStepToX();
         return;
-      }
-      if (this.table.selectedLine === 2) {
+      } else if (this.table.selectedLine === 2) {
         if (this.table.option && this.cursor.x === 1) {
           this.table.option = false;
+          console.log("option = false");
           this.updateDisplay();
           return;
         } else if (this.table.option && this.cursor.x === 0) {
@@ -265,18 +266,22 @@ const calculator = {
           return;
         } else {
           this.table.option = true;
+          console.log("option = true");
           this.updateDisplay();
           return;
         }
-      }
-      if (this.table.selectedLine === 3) {
+      } else if (this.table.selectedLine === 3) {
         this.table.page = 3;
+        console.log("showing table with option", this.table.option);
         this.showTable();
+        this.cursor.x = 0;
+        this.cursor.y = 3;
         this.updateDisplay();
         return;
       }
     }
-    if (this.cursor.y !== 0) {
+    // copy when scrolling through history
+    else if (this.cursor.y !== 0) {
       if ((inOut = (this.cursor.y - 1) % 2 === 0)) {
         this.state.val.push(
           this.history[Math.floor((this.cursor.y - 1) / 2)].out
@@ -297,7 +302,9 @@ const calculator = {
       this.cursor.y = 0;
       this.cursor.x = this.state.val.length;
       this.updateDisplay();
-    } else {
+    }
+    // solve sequence
+    else {
       try {
         const inputWidth =
           document.querySelector(".current .input").offsetWidth;
@@ -380,6 +387,7 @@ const calculator = {
     let exponentiating = false;
     let exponentCounter = 0;
     for (let i = 0; i < parsed.length; i++) {
+      // exponenent formatting
       if (parsed[i] === "(") {
         if (exponentiating) {
           parsed[i] = "<sup>";
@@ -398,6 +406,8 @@ const calculator = {
         exponentiating = true;
         parsed[i] = "";
       }
+      //
+      // fraction formatting
       if (parsed[i] === "frac-top") {
         parsed[i] = "<span class='frac'><span class='inside'>";
       }
@@ -408,6 +418,9 @@ const calculator = {
       if (parsed[i] === "frac-end") {
         parsed[i] = "</span></span>";
       }
+      //
+      // cursor insertion
+      console.log(this.cursor.x, noCursor, this.cursor.y);
       if (i === this.cursor.x && noCursor === false && this.cursor.y === 0) {
         if (this.state.type[i] === "placeholder") {
           parsed[i] = `<span class='cursor'>\u232a</span>`;
@@ -419,7 +432,7 @@ const calculator = {
     return parsed;
   },
   cursorSetup: function (parsed, noCursor) {
-    if (this.table.page > 0) return parsed;
+    if (this.table.page === 3) return parsed;
     const previousCurosr = document.querySelector(".cursor");
     if (previousCurosr) {
       previousCurosr.classList.remove("cursor");
@@ -439,7 +452,7 @@ const calculator = {
   },
   updateDisplay: function (noCursor = false) {
     let parsed = this.cursorSetup(this.inputDisplaySetup(noCursor), noCursor);
-    console.log(parsed, this.state.val);
+    console.log(parsed, this.state.val, noCursor, this.cursor.y);
     if (this.table.page === 1) {
       this.functionLine.innerHTML = this.table.functionBase + parsed.join("");
     } else if (this.table.page === 2) {
@@ -459,7 +472,7 @@ const calculator = {
               "<span class='selected option'>Auto</span><span class='cursor option'>Ask-x</span>";
           } else {
             this.table.optionLine.innerHTML =
-              "<span class='selected option'>Auto</span><span class='option'>Ask-x</span>";
+              "<span class='selected cursor option'>Auto</span><span class='option'>Ask-x</span>";
           }
         } else {
           console.log(this.cursor.x);
@@ -468,7 +481,7 @@ const calculator = {
               "<span class='cursor option'>Auto</span><span class='selected option'>Ask-x</span>";
           } else {
             this.table.optionLine.innerHTML =
-              "<span class='option'>Auto</span><span class='selected option'>Ask-x</span>";
+              "<span class='option'>Auto</span><span class='selected cursor option'>Ask-x</span>";
           }
         }
       } else {
@@ -509,10 +522,12 @@ const calculator = {
     console.log("fraccing");
   },
   setupTableFunction: function () {
+    // table variable setup of standard values
     this.table.page = 1;
     this.saveState = this.state;
     this.state = { val: [], type: [] };
     this.displayBuffer.innerHTML = "";
+    // create html
     tableBox = document.createElement("div");
     tableBox.classList.add("table-setup");
     this.functionLine = document.createElement("div");
@@ -523,9 +538,7 @@ const calculator = {
     this.updateDisplay();
   },
   setupTableParameters: function () {
-    this.table.page = 2;
-    this.table.function = this.state;
-    this.state = { val: [], type: [] };
+    // html
     this.displayBuffer.innerHTML = "";
     tableBox = document.createElement("div");
     tableBox.classList.add("table-setup");
@@ -547,55 +560,61 @@ const calculator = {
     tableBox.appendChild(this.table.optionLine);
     tableBox.appendChild(this.table.okLine);
     this.displayBuffer.appendChild(tableBox);
+    // setup default values for table parameters
+    this.table.page = 2;
+    this.table.selectedLine = 0;
+    this.table.function = this.state;
+    this.state = { val: [], type: [] };
+    this.tableUpdateStart();
     this.updateDisplay();
   },
-  tableStepParameter: function () {
-    if (this.table.selectedLine === 0) {
-      this.table.selectedLine = 1;
-      if (this.state.val.length === 0) {
-        this.state = { val: [this.table.start], type: ["number"] };
-      }
-      const parsedState = parser(this.state);
-      this.table.start = solver(parsedState.val, parsedState.type);
-      this.table.startLine.innerHTML = this.table.startBase + this.table.start;
-      this.table.startLine.classList.remove("current");
-      this.table.stepLine.classList.add("current");
+  tableStartToStep: function () {
+    this.tableUpdateStart();
+    this.table.selectedLine++;
+    this.table.startLine.innerHTML = this.table.startBase + this.table.start;
+    this.table.startLine.classList.remove("current");
+    this.table.stepLine.classList.add("current");
+    this.state = { val: [], type: [] };
+    this.tableUpdateStep();
+  },
+  tableStepToStart: function () {
+    this.tableUpdateStep();
+    this.table.selectedLine--;
+    this.table.stepLine.innerHTML = this.table.stepBase + this.table.step;
+    this.table.stepLine.classList.remove("current");
+    this.table.startLine.classList.add("current");
+    this.state = { val: [], type: [] };
+    this.tableUpdateStart();
+  },
+  tableUpdateStep: function () {
+    if (this.state.val.length === 0) {
       this.state = { val: [this.table.step], type: ["number"] };
-      this.updateDisplay();
-    } else {
-      this.table.selectedLine = 1;
-      this.table.okLine.classList.remove("current");
-      this.table.stepLine.classList.add("current");
-      this.updateDisplay();
     }
-  },
-  tableStartParameter: function () {
-    if (this.table.selectedLine === 1) {
-      this.table.selectedLine = 0;
-      const parsedState = parser(this.state);
-      console.log(parsedState);
-      this.table.step = solver(parsedState.val, parsedState.type);
-      this.table.stepLine.innerHTML = this.table.stepBase + this.table.step;
-      this.table.stepLine.classList.remove("current");
-      this.table.startLine.classList.add("current");
-      this.state = { val: [this.table.start], type: ["number"] };
-      this.updateDisplay();
-    } else {
-      this.updateDisplay();
-    }
-  },
-  tableXparameter: function () {
+    const parsedState = parser(this.state);
+    this.table.step = solver(parsedState.val, parsedState.type);
+    this.table.stepLine.innerHTML = this.table.stepBase + this.table.step;
     this.cursor.x = 0;
-    if (this.table.selectedLine === 1)
-      this.table.stepLine.innerHTML = this.table.stepBase + this.table.step;
+    this.updateDisplay();
+  },
+  tableUpdateStart: function () {
+    if (this.state.val.length === 0) {
+      this.state = { val: [this.table.start], type: ["number"] };
+    }
+    const parsedState = parser(this.state);
+    this.table.start = solver(parsedState.val, parsedState.type);
+    this.table.startLine.innerHTML = this.table.startBase + this.table.start;
+    this.cursor.x = 0;
+    this.updateDisplay();
+  },
+  tableStepToX: function () {
+    this.tableUpdateStep();
+    this.table.selectedLine++;
+    this.table.stepLine.innerHTML = this.table.stepBase + this.table.step;
     this.table.stepLine.classList.remove("current");
     this.table.optionLine.classList.add("current");
-    this.table.selectedLine = 2;
     this.updateDisplay();
   },
   showTable: function () {
-    this.cursor.x = 0;
-    this.cursor.y = 3;
     const results = this.updateTable();
     this.displayBuffer.innerHTML = "";
     const headerRow = document.createElement("div");
@@ -609,29 +628,30 @@ const calculator = {
       dataRow.classList.add("table", "data");
       this.displayBuffer.appendChild(dataRow);
     });
-    const currentSelection = document.createElement('div')
-    currentSelection.classList.add("table", "selection")
-    this.displayBuffer.appendChild(currentSelection)
-
+    const currentSelection = document.createElement("div");
+    currentSelection.classList.add("table", "selection");
+    this.displayBuffer.appendChild(currentSelection);
   },
   updateTable: function () {
-    if ((this.table.option = true)) {
-      const storedX = this.variables.x;
-      let results = [];
-      for (let i = 0; i < 3; i++) {
-        // the form of this.base + (i + this.table.startCounter) * this.step
-        const x = `${
-          Number(this.table.start) +
-          (i + this.table.startCounter) * Number(this.table.step)
-        }`;
-        console.log(x, this.table.start, this.table.step, i);
-        this.variables.x = x;
-        const parsedFunction = parser(this.table.function);
-        results[i] = [x, solver(parsedFunction.val, parsedFunction.type)];
-      }
-      this.variables.x = storedX;
-      return results;
+    if (this.table.option === true) {
+      increment = this.table.startCounter;
+    } else {
+      increment = 0;
     }
+    const storedX = this.variables.x;
+    let results = [];
+    for (let i = 0; i < 3; i++) {
+      // the form of this.base + (i + this.table.startCounter) * this.step
+      const x = `${
+        Number(this.table.start) + (i + increment) * Number(this.table.step)
+      }`;
+      console.log(x, this.table.start, this.table.step, i);
+      this.variables.x = x;
+      const parsedFunction = parser(this.table.function);
+      results[i] = [x, solver(parsedFunction.val, parsedFunction.type)];
+    }
+    this.variables.x = storedX;
+    return results;
   },
   left: function () {
     if (this.cursor.x > 0) {
@@ -656,7 +676,7 @@ const calculator = {
   up: function () {
     if (this.table.page === 2) {
       if (this.table.selectedLine === 1) {
-        this.tableStartParameter();
+        this.tableStepToStart();
         return;
       }
       if (this.table.selectedLine === 2) {
@@ -670,8 +690,12 @@ const calculator = {
         return;
       }
     } else if (this.table.page === 3) {
-      this.cursor.y >= 3 ? (this.cursor.y = 3) : this.cursor.y++;
-      this.updateDisplay();
+      if (this.cursor.y === 3) {
+        this.table.startCounter--;
+        this.showTable();
+      } else {
+        this.cursor.y >= 3 ? (this.cursor.y = 3) : this.cursor.y++;
+      }
     } else {
       this.cursor.y >= 2 * this.history.length
         ? (this.cursor.y = 2 * this.history.length)
@@ -682,26 +706,28 @@ const calculator = {
   down: function () {
     if (this.table.page === 2) {
       if (this.table.selectedLine === 0) {
-        this.tableStepParameter();
+        this.tableStartToStep();
         return;
-      }
-      if (this.table.selectedLine === 1) {
-        this.tableXparameter();
+      } else if (this.table.selectedLine === 1) {
+        this.tableStepToX();
         return;
-      }
-      if (this.table.selectedLine === 2) {
+      } else if (this.table.selectedLine === 2) {
         this.table.selectedLine = 3;
         this.table.okLine.innerHTML = "<span class='selected'>OK</span>";
         this.updateDisplay();
         return;
       }
     } else if (this.table.page === 3) {
-      this.cursor.y <= 2 ? (this.cursor.y = 1) : this.cursor.y--;
-      this.updateDisplay();
+      if (this.cursor.y === 1) {
+        this.table.startCounter++;
+        this.showTable();
+      } else {
+        this.cursor.y <= 2 ? (this.cursor.y = 1) : this.cursor.y--;
+      }
     } else {
       this.cursor.y <= 1 ? (this.cursor.y = 0) : this.cursor.y--;
-      this.updateDisplay();
     }
+    this.updateDisplay();
   },
   add: function (a, b) {
     return Number(a) + Number(b);
